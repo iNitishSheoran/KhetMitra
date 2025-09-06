@@ -12,6 +12,7 @@ import About from './About';
 import Pros from './Pros';
 import Marketing from './Marketing';
 import Floating from '../components/Floating';
+import Diagnose from './Diagnose';
 import Footer from '../components/Footer';
 
 const banners = [Banner1, Banner2, Banner3, Banner4];
@@ -91,6 +92,7 @@ function Body() {
         <div className="-mt-[9rem]">
           <Highlights className="bg-white" />
         </div>
+        <Diagnose/>
         <Marketing />
         <Pros />
         <About />
