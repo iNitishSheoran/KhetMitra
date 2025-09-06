@@ -166,8 +166,8 @@ export default function HelpForm() {
 
           {/* Contact Info */}
           <div className="flex justify-center md:justify-start gap-6 mt-6 text-gray-600 text-sm">
-            <p>📞 +91 88821 53238</p>
-            <p>✉️ info@yourdomain.com</p>
+            <p>📞 +91 79881 00765</p>
+            <p>✉️ khetmitra23@gmail.com</p>
           </div>
         </div>
       </div>
