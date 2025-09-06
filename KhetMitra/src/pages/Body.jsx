@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Navbar from '../components/Navbar';
 import Banner1 from '../assets/Banner1.png';
 import Banner2 from '../assets/Banner2.png';
 import Animation from '../assets/Animation.mp4';
@@ -23,11 +22,11 @@ function Body() {
 
   return (
     <div className="w-full overflow-x-hidden">   {/* ✅ Full width */}
-      <Navbar />
+      
 
       {/* Responsive Banner */}
-      <div className="w-full mt-[5.1rem] relative overflow-hidden">
-        <div className="relative w-full aspect-[19/3] sm:aspect-[19/3] md:h-[180px] lg:h-[225px] xl:h-[225px] overflow-hidden">
+      <div className="w-full mt-[5.1rem] relative">
+        <div className="relative w-full aspect-[19/3] sm:aspect-[19/3] md:h-[180px] lg:h-[225px] xl:h-[225px] ">
           <AnimatePresence mode="sync">
             <motion.img
               key={currentBanner}

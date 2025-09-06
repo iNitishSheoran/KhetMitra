@@ -27,39 +27,54 @@ export default function HelpForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const data = new FormData();
-      Object.keys(form).forEach((key) => {
-        data.append(key, form[key]);
-      });
-      if (imageFile) {
-        data.append("image", imageFile); // backend multer should handle this
-      }
-
-      const res = await axios.post(`${BASE_URL}/help/submit`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true, // send cookies if JWT auth
-      });
-
-      setMessage(res.data.message || "✅ Request submitted successfully!");
-      setForm({
-        name: "",
-        state: "",
-        district: "",
-        phoneNo: "",
-        email: "",
-        help: "",
-      });
-      setImageFile(null);
-      navigate("/my-requests");
-    } catch (err) {
-      setMessage(err.response?.data?.error || "❌ Failed to submit request");
+  try {
+    const data = new FormData();
+    Object.keys(form).forEach((key) => {
+      data.append(key, form[key]);
+    });
+    if (imageFile) {
+      data.append("image", imageFile);
     }
-    setLoading(false);
-  };
+
+    const res = await axios.post(`${BASE_URL}/help/submit`, data, {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    });
+
+    // ✅ Show success message
+    setMessage(res.data.message || "✅ Request submitted successfully!");
+
+    // ✅ Reset form + file
+    setForm({
+      name: "",
+      state: "",
+      district: "",
+      phoneNo: "",
+      email: "",
+      help: "",
+    });
+    setImageFile(null);
+
+    // ✅ Auto clear success message after 3s
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+
+  } catch (err) {
+    setMessage(err.response?.data?.error || "❌ Failed to submit request");
+
+    // Clear error after 3s too
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  }
+
+  setLoading(false);
+};
+
 
   return (
     <div className="min-h-screen bg-[#bddcb8] flex flex-col items-center px-4 py-10">

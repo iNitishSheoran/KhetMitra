@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/logo.png";
 import { BASE_URL } from "../config";
@@ -10,14 +10,24 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  const isAuthenticated = useAuth();
+  const { isAuthenticated, logout } = useAuth(); // ✅ destructure from your hook
+  const navigate = useNavigate();
 
+  // ✅ Fetch user only when auth changes (no infinite loop)
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/user`, {
+          withCredentials: true,
+        });
+        setUser(res.data);
+      } catch {
+        setUser(null);
+      }
+    };
+
     if (isAuthenticated) {
-      axios
-        .get(`${BASE_URL}/user`, { withCredentials: true })
-        .then((res) => setUser(res.data))
-        .catch(() => setUser(null));
+      fetchUser();
     } else {
       setUser(null);
     }
@@ -26,6 +36,10 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+      setUser(null);
+      setShowDropdown(false);
+      logout(); // ✅ call hook’s logout
+      navigate("/login");
     } catch (err) {
       console.error("Logout failed", err);
     }
@@ -42,16 +56,15 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-gradient-to-r from-[#253900] to-[#08CB00] text-white flex fixed top-0 left-0 items-center justify-between z-[999] pl-4 pr-6 py-3 shadow-md shadow-black/30 w-full">
+    <nav className="bg-gradient-to-r from-[#253900] to-[#08CB00] text-white flex fixed top-0 left-0 items-center justify-between pl-4 pr-6 py-3 shadow-md shadow-black/30 w-full z-[50]">
       {/* Logo */}
       <Link to="/">
         <div className="flex items-center space-x-3 text-[#08CB00] text-2xl font-extrabold hover:scale-105 transition-transform">
           <img
-  src={logo}
-  alt="Logo"
-  className="w-14 h-14 ml-5 rounded-full shadow-md object-cover"
-/>
-
+            src={logo}
+            alt="Logo"
+            className="w-14 h-14 ml-5 rounded-full shadow-md object-cover"
+          />
           <span className="text-white hover:text-[#08CB00] transition-colors">
             KhetMitra
           </span>
@@ -75,6 +88,7 @@ export default function Navbar() {
         <Link to="/enam" className="hover:text-[#08CB00] transition-colors">
           Enam
         </Link>
+        
       </div>
 
       {/* Profile */}
@@ -91,9 +105,10 @@ export default function Navbar() {
 
         {/* Dropdown */}
         {showDropdown && (
-          <div className="absolute right-0 mt-3 w-52 bg-[#1B1B1B] text-white rounded-lg shadow-lg flex flex-col border border-[#08CB00]">
+          <div className="absolute top-[120%] right-0 mt-2 w-52 bg-[#1B1B1B] text-white rounded-lg shadow-lg flex flex-col border border-[#08CB00] z-[9999]">
+            {/* Mobile Nav Links */}
             <div className="md:hidden flex flex-col">
-              <Link to="/home" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/" className="px-4 py-2 hover:bg-[#08CB00]/20">
                 Home
               </Link>
               <Link to="/diagnose" className="px-4 py-2 hover:bg-[#08CB00]/20">
@@ -113,7 +128,7 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {isAuthenticated === false && (
+            {!isAuthenticated && (
               <Link to="/signup" className="px-4 py-2 hover:bg-[#08CB00]/20">
                 Sign up
               </Link>
@@ -126,6 +141,12 @@ export default function Navbar() {
                   className="px-4 py-2 hover:bg-[#08CB00]/20 border-t border-gray-700"
                 >
                   My Profile
+                </Link>
+                <Link
+                  to="/my-requests"
+                  className="px-4 py-2 hover:bg-[#08CB00]/20"
+                >
+                  My Requests
                 </Link>
                 <button
                   onClick={handleLogout}

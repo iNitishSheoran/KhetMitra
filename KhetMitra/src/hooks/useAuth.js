@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
+// src/hooks/useAuth.js
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config";
 
 export default function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // null = loading
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    axios
-      .get(`${BASE_URL}/auth/check`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        if (res.status === 200 && res.data.authenticated) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      })
-      .catch((err) => {
-        // 👇 Handle 401 or connection issues gracefully
-        console.warn("auth check failed:", err?.response?.status);
-        setIsAuthenticated(false);
-      });
+  const checkAuth = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${BASE_URL}/auth/check`, { withCredentials: true });
+      setIsAuthenticated(res.data?.authenticated === true);
+    } catch (err) {
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return isAuthenticated;
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // return object so components can call refreshAuth()
+  return { isAuthenticated, loading, refreshAuth: checkAuth };
 }
