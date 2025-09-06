@@ -42,15 +42,14 @@ function Body() {
         </div>
 
         {/* Tagline + Animation Section */}
-        <div className="flex flex-col lg:flex-row items-center justify-between py-[3rem] pb-[8rem] gap-12 bg-[#edf2fe] w-full">
+        <div className="flex flex-col lg:flex-row items-center justify-between py-[3rem] pb-[8rem] gap-12 bg-[#e3efe6] w-full">
           {/* Tagline */}
-          <div className="w-full lg:w-1/2 px-6 lg:px-12">
+          <div className="w-full lg:w-1/2 ml-20 px-6 lg:px-12">
             <h1 className="text-4xl font-extrabold leading-snug text-[#14213d]">
-              जब <span className="text-red-500">Topic</span> हो Weak,{' '}
-              <span className="text-red-500">Docengo </span>करे ठीक!
+              <span className="text-red-500">AI</span> <span className="text-green-800">kheti 🌾</span>, <span className="text-red-500">desh </span> ki pragati
             </h1>
             <p className="text-lg text-gray-600 mt-4">
-              Your pace. Your topic. Your mentor - That's Docengo.
+              मिट्टी से मंडी तक – हर कदम पर आपके साथ – खेतमित्र।
             </p>
             <button
               className="mt-6 bg-gradient-to-r from-red-500 to-[#14213d] hover:opacity-90 text-white font-semibold px-6 py-3 rounded-xl shadow-md"
