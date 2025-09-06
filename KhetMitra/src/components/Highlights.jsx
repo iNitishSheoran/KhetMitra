@@ -34,6 +34,7 @@ const data = [
 ];
 
 function Highlights() {
+  
   return (
     <section className=" w-full py-14 px-4 md:px-16">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-0 bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
