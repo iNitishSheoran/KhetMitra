@@ -44,7 +44,7 @@ export default function Navbar() {
   return (
     <nav className="bg-gradient-to-r from-[#253900] to-[#08CB00] text-white flex fixed top-0 left-0 items-center justify-between z-[999] pl-4 pr-6 py-3 shadow-md shadow-black/30 w-full">
       {/* Logo */}
-      <Link to="/home">
+      <Link to="/">
         <div className="flex items-center space-x-3 text-[#08CB00] text-2xl font-extrabold hover:scale-105 transition-transform">
           <img
   src={logo}
@@ -60,9 +60,6 @@ export default function Navbar() {
 
       {/* Nav Links */}
       <div className="hidden md:flex space-x-8 text-lg font-medium">
-        <Link to="/home" className="hover:text-[#08CB00] transition-colors">
-          Home
-        </Link>
         <Link to="/diagnose" className="hover:text-[#08CB00] transition-colors">
           Diagnose
         </Link>
