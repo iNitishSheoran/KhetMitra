@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import HelpImage from "../assets/Help.png";
@@ -13,6 +14,7 @@ export default function HelpForm() {
     email: "",
     help: "",
   });
+  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -20,11 +22,28 @@ export default function HelpForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const res = await axios.post(`${BASE_URL}/help/submit`, form);
+      const data = new FormData();
+      Object.keys(form).forEach((key) => {
+        data.append(key, form[key]);
+      });
+      if (imageFile) {
+        data.append("image", imageFile); // backend multer should handle this
+      }
+
+      const res = await axios.post(`${BASE_URL}/help/submit`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true, // send cookies if JWT auth
+      });
+
       setMessage(res.data.message || "✅ Request submitted successfully!");
       setForm({
         name: "",
@@ -34,6 +53,7 @@ export default function HelpForm() {
         email: "",
         help: "",
       });
+      setImageFile(null);
       navigate("/my-requests");
     } catch (err) {
       setMessage(err.response?.data?.error || "❌ Failed to submit request");
@@ -42,7 +62,10 @@ export default function HelpForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#bddcb8] flex flex-col items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-[#bddcb8] flex flex-col items-center px-4 py-10">
+      {/* vacant space for navbar */}
+      <div className="h-16 w-full"></div>
+
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-8 text-center">
         सहायता अनुरोध (Help Request)
       </h2>
@@ -123,6 +146,15 @@ export default function HelpForm() {
               className="md:col-span-2 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-500 outline-none"
               required
             ></textarea>
+
+            {/* File upload */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="md:col-span-2 w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 bg-white focus:ring-2 focus:ring-green-500 outline-none"
+            />
+
             <button
               type="submit"
               disabled={loading}
