@@ -7,6 +7,7 @@ import Animation from '../assets/Animation.mp4';
 import { Link } from 'react-router-dom';
 import Banner3 from '../assets/Banner3.png';
 import Banner4 from '../assets/Banner4.png';
+import Highlights from '../components/Highlights';
 
 const banners = [Banner1, Banner2, Banner3, Banner4];
 
@@ -83,7 +84,7 @@ function Body() {
         </div>
 
         <div className="-mt-[9rem]">
-          {/* <Highlights className="bg-white" /> */}
+          <Highlights className="bg-white" />
         </div>
       </div>
     </div>
