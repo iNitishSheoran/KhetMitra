@@ -52,17 +52,22 @@ function Body() {
             <p className="text-lg text-gray-600 mt-4">
               मिट्टी से मंडी तक – हर कदम पर आपके साथ – खेतमित्र।
             </p>
-            <button
-              className="mt-6 bg-gradient-to-r from-red-500 to-[#14213d] hover:opacity-90 text-white font-semibold px-6 py-3 rounded-xl shadow-md"
-              onClick={() =>
-                window.open(
-                  'https://wa.me/918882153238?text=Hi%2C%20I\'m%20interested%20in%20FREE%20Demo%20Session',
-                  '_blank'
-                )
-              }
-            >
-              Book a Free Demo Session ⭐️
-            </button>
+           <button
+  className="mt-6 bg-gradient-to-r from-green-700 to-green-500 hover:from-green-800 hover:to-green-600 
+             transition duration-300 transform hover:scale-105 text-white font-semibold px-8 py-3 
+             rounded-full shadow-md"
+  onClick={() =>
+    window.open(
+      "https://wa.me/917988100765?text=नमस्ते%2C%20मुझे%20आज%20ही%20AI%20से%20फ़सल%20सुझाव%20चाहिए।",
+      "_blank"
+    )
+  }
+>
+  🌱 आज ही फ़सल सुझाव लें
+</button>
+
+
+
           </div>
 
           {/* Animation Video */}
