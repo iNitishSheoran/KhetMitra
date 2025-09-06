@@ -2,6 +2,7 @@ import './App.css'
 import { Routes, Route } from "react-router-dom";
 import Navbar from './components/Navbar';
 import Body from './pages/Body';
+import About from './pages/About';
 
 import HelpForm from './pages/HelpForm';
 // import MyRequests from './pages/MyRequests';
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Body />} />
         <Route path="/help" element={<HelpForm />} />
+        <Route path="/about" element={<About />} />
         {/* <Route path="/my-requests" element={<MyRequests />} />
         <Route path="/admin/help" element={<AdminHelpPage />} /> */}
       </Routes>
