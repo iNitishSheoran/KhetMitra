@@ -8,28 +8,28 @@ import five from '../assets/5.png';
 const data = [
   {
     icon: one,
-    title: 'Live Zoom Mentorship',
-    subtitle: 'Interactive. Personal. Real-Time.',
+    title: '🌱 pH & Soil Health',
+    subtitle: 'pH, temp & moisture check.',
   },
   {
     icon: two,
-    title: '1 Mentor × 5 Students',
-    subtitle: 'Micro-Batches. Max Clarity.',
+    title: '🧪 Soil Nutrients (NPK)',
+    subtitle: 'AI-driven NPK balance info.',
   },
   {
     icon: three,
-    title: 'Taught by Exam Qualified Faculty',
-    subtitle: 'JEE, NEET, CAT & UPSC Toppers',
+    title: '🐄 Grazing Issues',
+    subtitle: 'Track grazing & crop damage.',
   },
   {
     icon: four,
-    title: 'Handwritten Notes',
-    subtitle: 'From topper brains to your desk',
+    title: '🌤️ Smart Sensors',
+    subtitle: 'Humidity, UV & conductivity.',
   },
   {
     icon: five,
-    title: 'Topic-Wise Clarity',
-    subtitle: 'No Bundles. No Confusion.',
+    title: '🌧️ Weather Alerts',
+    subtitle: 'Rain & storm notifications.',
   },
 ];
 
