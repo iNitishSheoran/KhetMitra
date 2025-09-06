@@ -6,8 +6,6 @@ import Login from './pages/Login';
 import HelpForm from './pages/HelpForm';
 import MyRequests from './pages/MyRequests';
 import CropPage from './pages/CropPage';
-import UserProfile from './pages/UserProfile';
-import EditProfile from './pages/EditProfile';
 // import AdminHelpPage from './pages/AdminHelpPage';
 
 function App() {
@@ -20,9 +18,7 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/help" element={<HelpForm />} />
         <Route path="/my-requests" element={<MyRequests />} />
-        <Route path="/cropData" element={<CropPage/>}/>
-        <Route path="/myProfile" element={<UserProfile/>}/>
-        <Route path="/editProfile" element={<EditProfile/>}/>
+        <Route path="/cropDetails" element={<CropPage/>}/>
         {/*
         <Route path="/admin/help" element={<AdminHelpPage />} /> */}
       </Routes>
