@@ -7,30 +7,30 @@ import five from '../assets/5.png';
 
 const data = [
   {
-    icon: one,
-    title: '🌱 pH & Soil Health',
-    subtitle: 'pH, temp & moisture check.',
-  },
-  {
-    icon: two,
-    title: '🧪 Soil Nutrients (NPK)',
-    subtitle: 'AI-driven NPK balance info.',
-  },
-  {
-    icon: three,
-    title: '🐄 Grazing Issues',
-    subtitle: 'Track grazing & crop damage.',
-  },
-  {
-    icon: four,
-    title: '🌤️ Smart Sensors',
-    subtitle: 'Humidity, UV & conductivity.',
-  },
-  {
-    icon: five,
-    title: '🌧️ Weather Alerts',
-    subtitle: 'Rain & storm notifications.',
-  },
+  icon: one,
+  title: '🌱 pH एवं मृदा स्वास्थ्य',
+  subtitle: 'pH, तापमान व नमी जाँच।',
+},
+{
+  icon: two,
+  title: '🧪 मृदा पोषक तत्व (NPK)',
+  subtitle: 'AI आधारित NPK संतुलन।',
+},
+{
+  icon: three,
+  title: '🐄 चराई संबंधी समस्याएँ',
+  subtitle: 'चराई व फसल क्षति ट्रैक।',
+},
+{
+  icon: four,
+  title: '🌤️ स्मार्ट सेंसर',
+  subtitle: 'आर्द्रता, UV व चालकता।',
+},
+{
+  icon: five,
+  title: '🌧️ मौसम चेतावनी',
+  subtitle: 'बारिश व तूफ़ान अलर्ट।',
+},
 ];
 
 function Highlights() {
