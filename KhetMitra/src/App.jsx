@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import HelpForm from './pages/HelpForm';
 import MyRequests from './pages/MyRequests';
 import CropPage from './pages/CropPage';
+import About from './pages/About';
+import Diagnose from './pages/Diagnose';
 // import AdminHelpPage from './pages/AdminHelpPage';
 
 function App() {
@@ -19,7 +21,10 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/help" element={<HelpForm />} />
         <Route path="/my-requests" element={<MyRequests />} />
-        <Route path="/cropDetails" element={<CropPage/>}/>
+        <Route path="/cropData" element={<CropPage/>}/>
+        <Route path="/about" element={<About/>}/>
+        <Route path="/diagnose" element={<Diagnose/>}/>
+
         {/*
         <Route path="/admin/help" element={<AdminHelpPage />} /> */}
       </Routes>

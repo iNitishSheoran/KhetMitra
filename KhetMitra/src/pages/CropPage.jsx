@@ -1,28 +1,40 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config";
+import {
+  Sprout,
+  Droplet,
+  Leaf,
+  Thermometer,
+  CloudRain,
+  FlaskConical,
+  Info,
+} from "lucide-react";
 
 export default function CropPage() {
   const [crops, setCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState("");
   const [cropDetails, setCropDetails] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Fetch all crop names
+  // Fetch crop list
   useEffect(() => {
     const fetchCrops = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/crop/all`, { withCredentials: true });
+        const res = await axios.get(`${BASE_URL}/crop/all`, {
+          withCredentials: true,
+        });
         setCrops(res.data.crops);
       } catch (err) {
         console.error(err);
-        alert("Failed to fetch crops");
+        setError("🌾 Oops! We couldn’t fetch crops. Please try again.");
       }
     };
     fetchCrops();
   }, []);
 
-  // Fetch crop + cultivation details
+  // Fetch crop details
   useEffect(() => {
     if (!selectedCrop) return;
 
@@ -33,26 +45,26 @@ export default function CropPage() {
           `${BASE_URL}/crop/details/${encodeURIComponent(selectedCrop)}`,
           { withCredentials: true }
         );
-        // Smooth transition: only replace data after loading
         setTimeout(() => {
           setCropDetails(res.data.crop);
           setLoading(false);
-        }, 300); // optional delay for smooth fade
+        }, 400);
       } catch (err) {
         console.error(err);
-        alert("Crop data not found");
+        setError("🚜 Crop data not found. Please try another crop.");
         setLoading(false);
       }
     };
-
     fetchCropDetails();
   }, [selectedCrop]);
 
   const renderObject = (obj) => (
-    <ul className="ml-5 list-disc">
+    <ul className="ml-5 list-disc space-y-1 text-gray-700">
       {Object.entries(obj).map(([key, value]) => (
         <li key={key}>
-          <strong>{key.replace(/_/g, " ")}:</strong>{" "}
+          <strong className="capitalize text-green-700">
+            {key.replace(/_/g, " ")}:
+          </strong>{" "}
           {Array.isArray(value)
             ? value.join(" – ")
             : typeof value === "object"
@@ -64,116 +76,197 @@ export default function CropPage() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto p-4 mt-20 relative">
-      <h1 className="text-3xl font-bold mb-6 text-green-700">Crop Details and Cultivation Steps</h1>
+    <div className="max-w-5xl mx-auto p-6 mt-16 space-y-8">
+      {/* Page Title */}
+      <h1 className="text-4xl font-extrabold text-center text-green-800 flex items-center justify-center gap-2">
+        <Sprout className="w-8 h-8 text-green-600" />
+        Crop Details & Cultivation Guide
+      </h1>
+      <p className="text-center text-gray-600">
+        Select a crop below to explore cultivation requirements, timeline, and
+        best practices 🌱
+      </p>
 
-      {/* Dropdown */}
-      <select
-        value={selectedCrop}
-        onChange={(e) => setSelectedCrop(e.target.value)}
-        className="w-full p-2 border border-green-500 rounded mb-6"
+      {/* Dropdown Section with Background Image */}
+      <div
+        className="relative w-full rounded-2xl overflow-hidden shadow-lg"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
-        <option value="">-- Select a Crop --</option>
-        {crops.map((crop) => (
-          <option key={crop._id} value={crop.name || crop.name_en}>
-            {crop.name || crop.name_en}
-          </option>
-        ))}
-      </select>
+        <div className="absolute inset-0 bg-green-900 bg-opacity-50"></div>
+        <div className="relative p-8 flex justify-center">
+          <select
+            value={selectedCrop}
+            onChange={(e) => setSelectedCrop(e.target.value)}
+            className="w-full md:w-2/3 p-3 rounded-xl shadow-md bg-white border border-green-400 focus:ring-2 focus:ring-green-500 transition"
+          >
+            <option value="">-- Select a Crop --</option>
+            {crops.map((crop) => (
+              <option key={crop._id} value={crop.name || crop.name_en}>
+                {crop.name || crop.name_en}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-      {/* Crop & Cultivation Details */}
-      {cropDetails && (
-        <div className="p-4 border rounded shadow bg-green-50 space-y-4 relative">
-          {loading && (
-            <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
-              <p className="text-gray-500 text-lg">Loading...</p>
-            </div>
-          )}
+      {/* Error Message */}
+      {error && (
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4 shadow-md flex items-center justify-between">
+          <span>{error}</span>
+          <button
+            onClick={() => setError("")}
+            className="ml-4 px-3 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg text-sm"
+          >
+            Got it
+          </button>
+        </div>
+      )}
 
-          {/* Crop Names */}
-          <h2 className="text-2xl font-semibold text-green-800">
-            {cropDetails.name_hi || cropDetails.name_en || cropDetails.name}
-          </h2>
+      {/* Loading */}
+      {loading && (
+        <div className="animate-pulse p-6 bg-green-50 rounded-lg text-center text-green-700 shadow-md">
+          🌿 Fetching crop details...
+        </div>
+      )}
 
-          {/* Crop Model Data */}
+      {/* Crop Details */}
+      {cropDetails && !loading && (
+        <div className="space-y-6">
+          {/* Crop Name */}
+          <div className="bg-gradient-to-r from-green-100 to-green-200 border border-green-300 rounded-xl p-5 shadow-lg">
+            <h2 className="text-2xl font-bold text-green-900">
+              {cropDetails.name_hi || cropDetails.name_en || cropDetails.name}
+            </h2>
+          </div>
+
+          {/* Crop Requirements */}
           {cropDetails.npk && (
-            <div>
-              <h3 className="font-semibold text-green-700 mb-1">Crop Details:</h3>
-              <ul className="ml-5 list-disc">
+            <div className="bg-white border border-green-200 rounded-xl p-5 shadow-lg space-y-3">
+              <h3 className="text-xl font-semibold text-green-700 flex items-center gap-2">
+                <Info className="w-6 h-6 text-green-600" /> Crop Requirements
+              </h3>
+              <ul className="list-disc ml-6 space-y-2 text-gray-700">
                 {Object.entries(cropDetails.npk).map(([key, val]) => (
                   <li key={key}>
-                    <strong>{key.toUpperCase()}:</strong> {Array.isArray(val) ? val.join(" – ") : val}
+                    <strong className="text-green-700">{key.toUpperCase()}:</strong>{" "}
+                    {Array.isArray(val) ? val.join(" – ") : val}
                   </li>
                 ))}
-                {cropDetails.temperature_c && <li><strong>Temperature °C:</strong> {cropDetails.temperature_c.join(" – ")}</li>}
-                {cropDetails.humidity_percent && <li><strong>Humidity %:</strong> {cropDetails.humidity_percent.join(" – ")}</li>}
-                {cropDetails.soil_moisture_percent && <li><strong>Soil Moisture %:</strong> {cropDetails.soil_moisture_percent.join(" – ")}</li>}
-                {cropDetails.ph && <li><strong>pH:</strong> {cropDetails.ph.join(" – ")}</li>}
-                {cropDetails.ec_ds_m && <li><strong>EC dS/m:</strong> {cropDetails.ec_ds_m.join(" – ")}</li>}
-                {cropDetails.notes && <li><strong>Notes:</strong> {cropDetails.notes}</li>}
+                {cropDetails.temperature_c && (
+                  <li>
+                    <Thermometer className="inline mr-2 text-red-500" />{" "}
+                    {cropDetails.temperature_c.join(" – ")} °C
+                  </li>
+                )}
+                {cropDetails.humidity_percent && (
+                  <li>
+                    <CloudRain className="inline mr-2 text-blue-500" />{" "}
+                    {cropDetails.humidity_percent.join(" – ")} %
+                  </li>
+                )}
+                {cropDetails.soil_moisture_percent && (
+                  <li>
+                    <Droplet className="inline mr-2 text-cyan-500" />{" "}
+                    {cropDetails.soil_moisture_percent.join(" – ")} %
+                  </li>
+                )}
+                {cropDetails.ph && (
+                  <li>
+                    <FlaskConical className="inline mr-2 text-purple-500" /> pH:{" "}
+                    {cropDetails.ph.join(" – ")}
+                  </li>
+                )}
               </ul>
             </div>
           )}
 
-          {/* Cultivation Model Data */}
-          <div>
-            <h3 className="font-semibold text-green-700 mb-1">Cultivation Steps:</h3>
-
-            {["season", "soil", "sowing_window", "irrigation_schedule", "weed_control", "pest_disease_management", "harvest_and_postharvest"].map(field =>
+          {/* Cultivation Steps */}
+          <div className="bg-white border border-green-200 rounded-xl p-5 shadow-lg space-y-4">
+            <h3 className="text-xl font-semibold text-green-700 flex items-center gap-2">
+              <Leaf className="w-6 h-6 text-green-600" /> Cultivation Steps
+            </h3>
+            {[
+              ["season", "Season"],
+              ["soil", "Soil"],
+              ["sowing_window", "Sowing Window"],
+              ["irrigation_schedule", "Irrigation"],
+              ["weed_control", "Weed Control"],
+              ["pest_disease_management", "Pest & Disease"],
+              ["harvest_and_postharvest", "Harvest & Post-Harvest"],
+            ].map(([field, label]) =>
               cropDetails[field] ? (
-                <p key={field}>
-                  <strong>{field.replace(/_/g, " ").toUpperCase()}:</strong> {cropDetails[field]}
+                <p
+                  key={field}
+                  className="border-b pb-2 last:border-none text-gray-700"
+                >
+                  <strong className="text-green-700">{label}:</strong>{" "}
+                  {cropDetails[field]}
                 </p>
               ) : null
             )}
-
-            {cropDetails.seed_nursery && (
-              <div>
-                <h4 className="font-semibold text-green-600 mb-1">Seed / Nursery Info:</h4>
-                {renderObject(cropDetails.seed_nursery)}
-              </div>
-            )}
-
-            {cropDetails.fertilizer_NPK_kg_per_ha && (
-              <div>
-                <h4 className="font-semibold text-green-600 mb-1">Fertilizer (kg/ha):</h4>
-                {renderObject(cropDetails.fertilizer_NPK_kg_per_ha)}
-              </div>
-            )}
-
-            {cropDetails.timeline_months && (
-              <div>
-                <h4 className="font-semibold text-green-600 mb-1">Timeline:</h4>
-                {renderObject(cropDetails.timeline_months)}
-              </div>
-            )}
-
-            {cropDetails.detailed_steps_en?.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-green-600 mb-1">Cultivation Steps (EN):</h4>
-                <ol className="list-decimal ml-5">
-                  {cropDetails.detailed_steps_en.map((step, idx) => <li key={idx}>{step}</li>)}
-                </ol>
-              </div>
-            )}
-            {cropDetails.detailed_steps_hi?.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-green-600 mb-1">कृषि चरण (HI):</h4>
-                <ol className="list-decimal ml-5">
-                  {cropDetails.detailed_steps_hi.map((step, idx) => <li key={idx}>{step}</li>)}
-                </ol>
-              </div>
-            )}
-
-            {cropDetails.sources?.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-green-600 mb-1">Sources:</h4>
-                <ul className="ml-5 list-disc">
-                  {cropDetails.sources.map((src, i) => <li key={i}>{src}</li>)}
-                </ul>
-              </div>
-            )}
           </div>
+
+          {/* Fixed Timeline */}
+          {cropDetails.timeline_months && (
+            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-lg">
+              <h3 className="font-semibold text-green-700 mb-4">📅 Timeline</h3>
+              <div className="flex items-center gap-6 overflow-x-auto">
+                {Object.entries(cropDetails.timeline_months).map(
+                  ([month, activity], idx) => (
+                    <div
+                      key={month}
+                      className="flex flex-col items-center text-center min-w-[120px]"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold shadow-md">
+                        {idx + 1}
+                      </div>
+                      <p className="mt-2 text-sm font-semibold text-green-800">
+                        {month}
+                      </p>
+                      <p className="text-xs text-gray-600">{activity}</p>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Cultivation Guide */}
+          {(cropDetails.detailed_steps_en?.length > 0 ||
+            cropDetails.detailed_steps_hi?.length > 0) && (
+            <div className="bg-white border border-green-200 rounded-xl p-5 shadow-lg">
+              <h3 className="text-xl font-semibold text-green-700 mb-3">
+                📖 Cultivation Guide
+              </h3>
+              {cropDetails.detailed_steps_en?.length > 0 && (
+                <>
+                  <h4 className="font-semibold text-green-600 mb-2">English</h4>
+                  <ol className="list-decimal ml-6 space-y-1 text-gray-700">
+                    {cropDetails.detailed_steps_en.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </>
+              )}
+              {cropDetails.detailed_steps_hi?.length > 0 && (
+                <>
+                  <h4 className="font-semibold text-green-600 mt-4 mb-2">
+                    हिंदी
+                  </h4>
+                  <ol className="list-decimal ml-6 space-y-1 text-gray-700">
+                    {cropDetails.detailed_steps_hi.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
