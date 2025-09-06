@@ -7,30 +7,30 @@ import five from '../assets/5.png';
 
 const data = [
   {
-    icon: one,
-    title: 'Live Zoom Mentorship',
-    subtitle: 'Interactive. Personal. Real-Time.',
-  },
-  {
-    icon: two,
-    title: '1 Mentor × 5 Students',
-    subtitle: 'Micro-Batches. Max Clarity.',
-  },
-  {
-    icon: three,
-    title: 'Taught by Exam Qualified Faculty',
-    subtitle: 'JEE, NEET, CAT & UPSC Toppers',
-  },
-  {
-    icon: four,
-    title: 'Handwritten Notes',
-    subtitle: 'From topper brains to your desk',
-  },
-  {
-    icon: five,
-    title: 'Topic-Wise Clarity',
-    subtitle: 'No Bundles. No Confusion.',
-  },
+  icon: one,
+  title: '🌱 pH एवं मृदा स्वास्थ्य',
+  subtitle: 'pH, तापमान व नमी जाँच।',
+},
+{
+  icon: two,
+  title: '🧪 मृदा पोषक तत्व (NPK)',
+  subtitle: 'AI आधारित NPK संतुलन।',
+},
+{
+  icon: three,
+  title: '🐄 चराई संबंधी समस्याएँ',
+  subtitle: 'चराई व फसल क्षति ट्रैक।',
+},
+{
+  icon: four,
+  title: '🌤️ स्मार्ट सेंसर',
+  subtitle: 'आर्द्रता, UV व चालकता।',
+},
+{
+  icon: five,
+  title: '🌧️ मौसम चेतावनी',
+  subtitle: 'बारिश व तूफ़ान अलर्ट।',
+},
 ];
 
 function Highlights() {
