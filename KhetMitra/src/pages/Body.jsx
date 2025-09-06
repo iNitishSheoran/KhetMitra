@@ -13,6 +13,7 @@ import Marketing from './Marketing';
 import Floating from '../components/Floating';
 import Diagnose from './Diagnose';
 import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 
 
 const banners = [Banner1, Banner2, Banner3, Banner4];
@@ -32,7 +33,7 @@ function Body() {
 
   return (
     <div className="w-full overflow-x-hidden">   {/* ✅ Full width */}
-  
+    <Navbar/>
 
       {/* Responsive Banner */}
       <div className="w-full mt-[5.1rem] relative">
