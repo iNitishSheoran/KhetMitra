@@ -45,13 +45,11 @@ function Highlights() {
               index !== data.length - 1 ? 'md:border-r md:pr-6' : ''
             }`}
           >
-            <div className="w-12 h-12 mb-3 flex items-center justify-center">
+            <div className="w-32 h-32 mb-3 flex items-center justify-center">
               <img
                 src={item.icon}
                 alt={item.title}
-                className={`object-contain ${
-                  item.title === 'Handwritten Notes' ? 'scale-[2.25]' : ''
-                }`}
+                className={"object-contain"}
               />
             </div>
             <h3 className="text-md font-bold text-[#14213D]">{item.title}</h3>
