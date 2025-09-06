@@ -29,6 +29,37 @@ function Floating() {
     <>
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-4 z-50">
+        {/* AI Icon with Glowing Square Rings */}
+        <motion.div
+          className="relative flex flex-col items-center justify-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Expanding Purple Square Rings */}
+          <span className="absolute w-20 h-20 rounded-2xl border-4 border-purple-500 opacity-40 animate-ping" />
+          <span className="absolute w-28 h-28 rounded-2xl border-4 border-purple-400 opacity-30 animate-ping [animation-delay:0.6s]" />
+          <span className="absolute w-36 h-36 rounded-2xl border-4 border-purple-300 opacity-20 animate-ping [animation-delay:1.2s]" />
+
+          {/* Brain Icon */}
+          <div className="relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-2xl">
+            {/* Brain SVG */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="white"
+              className="w-9 h-9"
+            >
+              <path d="M9 2a3 3 0 0 0-3 3v2.5a2.5 2.5 0 0 0 0 5V14a3 3 0 0 0 3 3v4a3 3 0 0 0 3 3h.5V2H12a3 3 0 0 0-3-3zm6 0a3 3 0 0 1 3 3v2.5a2.5 2.5 0 0 1 0 5V14a3 3 0 0 1-3 3v4a3 3 0 0 1-3 3h-.5V2H12a3 3 0 0 1 3-3z" />
+            </svg>
+          </div>
+
+          {/* Title */}
+          <p className="mt-2 text-sm font-semibold text-purple-700">
+            KhetMitra AI
+          </p>
+        </motion.div>
+
         {/* Call Button */}
         <button
           onClick={handleCall}

@@ -77,7 +77,7 @@ function Body() {
           </div>
 
           {/* Animation Video */}
-          <div className="w-full lg:w-1/2 px-6 lg:px-12">
+          <div className="w-full lg:w-1/2 mr-24 px-6 lg:px-12">
             <video
               src={Animation}
               autoPlay
