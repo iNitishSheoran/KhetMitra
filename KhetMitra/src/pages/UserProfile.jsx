@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import { FaPhoneAlt, FaLeaf, FaMapMarkerAlt, FaUser } from "react-icons/fa";
+import { FaPhoneAlt, FaLeaf, FaMapMarkerAlt, FaUser, FaTractor } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { BASE_URL } from "../config";
 import { ClipLoader } from "react-spinners";
@@ -23,7 +23,7 @@ export default function UserProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-950 text-red-500">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-yellow-100 text-red-600">
         <p>{error}</p>
       </div>
     );
@@ -31,7 +31,7 @@ export default function UserProfile() {
 
   if (!user) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-green-950">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-100 to-yellow-100">
         <ClipLoader color="#22c55e" size={60} />
       </div>
     );
@@ -41,33 +41,46 @@ export default function UserProfile() {
     <div className="relative">
       <Navbar />
 
-      <div className="min-h-screen bg-green-950 pt-[7rem] px-4 flex justify-center items-start pb-[6rem]">
-        <div className="bg-green-900 text-green-50 rounded-3xl shadow-lg max-w-3xl w-full p-10 border border-green-700">
+      {/* 🌅 Farming sunrise gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-green-100 to-sky-200"></div>
+
+      <div className="min-h-screen relative pt-[7rem] px-4 flex justify-center items-start pb-[6rem]">
+        <div className="bg-white/30 backdrop-blur-lg rounded-3xl shadow-2xl max-w-3xl w-full p-10 border border-white/50">
           {/* Header */}
           <div className="text-center mb-10">
-            <h2 className="text-4xl font-extrabold text-green-400">
-              Welcome, {user.fullName.split(" ")[0]} 🌱
+            <h2 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-amber-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
+              Welcome, {user.fullName.split(" ")[0]} 🌾
             </h2>
-            <p className="text-green-200 text-sm mt-1">
-              Here’s your farming dashboard.
+            <p className="text-green-700 text-sm mt-2 flex items-center justify-center gap-2">
+              <FaTractor className="text-green-600" /> Your farming dashboard
             </p>
           </div>
 
           {/* Profile Info */}
           <div className="flex flex-col items-center gap-4">
-            <h3 className="text-2xl font-semibold text-white">{user.fullName}</h3>
-            <p className="text-green-400 font-medium mt-1 flex items-center gap-2">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-green-400 to-amber-300 flex items-center justify-center text-3xl font-bold shadow-lg border-4 border-white/60">
+              {user.fullName.charAt(0)}
+            </div>
+            <h3 className="text-2xl font-semibold text-green-900">{user.fullName}</h3>
+            <p className="text-green-700 font-medium mt-1 flex items-center gap-2">
               <MdEmail /> {user.emailId}
             </p>
             <Link to="/editProfile">
-              <button className="mt-4 px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold shadow-sm">
+              <button className="mt-4 px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:scale-105 transition">
                 ✏️ Edit Profile
               </button>
             </Link>
           </div>
 
+          {/* Divider */}
+          <div className="flex items-center my-8">
+            <div className="flex-grow border-t border-green-300"></div>
+            <FaLeaf className="mx-3 text-green-600" />
+            <div className="flex-grow border-t border-green-300"></div>
+          </div>
+
           {/* Info Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <DetailCard icon={<FaPhoneAlt />} label="Phone" value={user.phoneNumber} />
             <DetailCard icon={<FaMapMarkerAlt />} label="State" value={user.state} />
             <DetailCard icon={<FaMapMarkerAlt />} label="District" value={user.district} />
@@ -82,12 +95,12 @@ export default function UserProfile() {
 
 function DetailCard({ icon, label, value }) {
   return (
-    <div className="bg-green-800 border border-green-600 p-4 rounded-xl shadow-sm">
-      <div className="flex items-center gap-3 text-green-400 text-sm font-semibold mb-1">
-        <span>{icon}</span>
+    <div className="bg-white/40 backdrop-blur-md border border-green-200 p-5 rounded-2xl shadow-md hover:shadow-xl transition transform hover:scale-105">
+      <div className="flex items-center gap-3 text-green-700 text-sm font-semibold mb-2">
+        <span className="text-lg">{icon}</span>
         {label}
       </div>
-      <p className="text-white pl-8">{value || "Not provided"}</p>
+      <p className="text-green-900 pl-8 text-base">{value || "Not provided"}</p>
     </div>
   );
 }

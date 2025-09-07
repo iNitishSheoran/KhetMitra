@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
-// ⬇️ Move InputField OUTSIDE Login
+// ⬇️ InputField Component
 const InputField = forwardRef(({ icon: Icon, children, ...props }, ref) => (
   <div className="relative flex items-center border border-green-300 rounded-xl p-3 bg-white/30 backdrop-blur-md focus-within:ring-2 focus-within:ring-green-500 transition shadow-sm hover:shadow-md">
     <Icon className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
@@ -97,6 +97,16 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Log In"}
           </button>
+
+          {/* 🌟 Forgot Password Link */}
+          <p className="text-center mt-3">
+            <span
+              // onClick={() => navigate("/forgot-password")}
+              className="text-sm text-green-700 cursor-pointer font-medium hover:underline hover:text-green-900 transition"
+            >
+              Forgot your password?
+            </span>
+          </p>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-700">
