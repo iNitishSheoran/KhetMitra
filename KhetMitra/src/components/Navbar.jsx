@@ -10,24 +10,16 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { isAuthenticated, logout } = useAuth(); // ✅ destructure from your hook
+  const { isAuthenticated} = useAuth();
   const navigate = useNavigate();
 
-  // ✅ Fetch user only when auth changes (no infinite loop)
+  // ✅ Fetch user info when auth state changes
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/user`, {
-          withCredentials: true,
-        });
-        setUser(res.data);
-      } catch {
-        setUser(null);
-      }
-    };
-
     if (isAuthenticated) {
-      fetchUser();
+      axios
+        .get(`${BASE_URL}/user`, { withCredentials: true })
+        .then((res) => setUser(res.data))
+        .catch(() => setUser(null));
     } else {
       setUser(null);
     }
@@ -37,8 +29,7 @@ export default function Navbar() {
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
       setUser(null);
-      setShowDropdown(false);
-      logout(); // ✅ call hook’s logout
+      //setShowDropdown(false);
       navigate("/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -88,7 +79,6 @@ export default function Navbar() {
         <Link to="/enam" className="hover:text-[#08CB00] transition-colors">
           Enam
         </Link>
-        
       </div>
 
       {/* Profile */}
@@ -142,12 +132,24 @@ export default function Navbar() {
                 >
                   My Profile
                 </Link>
-                <Link
-                  to="/my-requests"
-                  className="px-4 py-2 hover:bg-[#08CB00]/20"
-                >
-                  My Requests
-                </Link>
+
+                {/* 🔑 Admins see AllHelp, Users see My Requests */}
+                {user?.isAdmin ? (
+                  <Link
+                    to="/allHelp"
+                    className="px-4 py-2 hover:bg-[#08CB00]/20"
+                  >
+                    All Help
+                  </Link>
+                ) : (
+                  <Link
+                    to="/my-requests"
+                    className="px-4 py-2 hover:bg-[#08CB00]/20"
+                  >
+                    My Requests
+                  </Link>
+                )}
+
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 text-left text-red-300 hover:bg-red-600/20 border-t border-gray-700"

@@ -1,10 +1,23 @@
 // src/components/Login.jsx
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+
+// ⬇️ Move InputField OUTSIDE Login
+const InputField = forwardRef(({ icon: Icon, children, ...props }, ref) => (
+  <div className="relative flex items-center border border-green-300 rounded-xl p-3 bg-white/30 backdrop-blur-md focus-within:ring-2 focus-within:ring-green-500 transition shadow-sm hover:shadow-md">
+    <Icon className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
+    <input
+      ref={ref}
+      {...props}
+      className="w-full outline-none bg-transparent placeholder-gray-600 pr-10"
+    />
+    {children}
+  </div>
+));
 
 export default function Login() {
   const navigate = useNavigate();
@@ -40,17 +53,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-
-  const InputField = ({ icon: Icon, children, ...props }) => (
-    <div className="relative flex items-center border border-green-300 rounded-xl p-3 bg-white/30 backdrop-blur-md focus-within:ring-2 focus-within:ring-green-500 transition shadow-sm hover:shadow-md">
-      <Icon className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
-      <input
-        {...props}
-        className="w-full outline-none bg-transparent placeholder-gray-600 pr-10"
-      />
-      {children}
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-green-50 to-amber-100 px-4">

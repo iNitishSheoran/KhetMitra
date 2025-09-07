@@ -3,6 +3,7 @@ import { BASE_URL } from "../config";
 import axios from "axios";
 import { FaTrashAlt } from "react-icons/fa";
 import { MdHelpOutline } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
 
 export default function MyRequests() {
   const [requests, setRequests] = useState([]);
@@ -94,8 +95,21 @@ export default function MyRequests() {
                 </span>
               </p>
 
+              {/* Admin Answer (if available) */}
+              {req.answer && (
+                <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-1">
+                    <FaCheckCircle className="text-green-600" />
+                    <span className="font-semibold text-green-800">
+                      Admin Answer:
+                    </span>
+                  </div>
+                  <p className="text-gray-800">{req.answer}</p>
+                </div>
+              )}
+
               {/* Submitted Date */}
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 text-sm mt-3">
                 📅 Submitted on:{" "}
                 {new Date(req.createdAt).toLocaleString("en-IN", {
                   dateStyle: "medium",

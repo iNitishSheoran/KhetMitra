@@ -14,7 +14,6 @@ export default function HelpForm() {
     email: "",
     help: "",
   });
-  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -22,63 +21,41 @@ export default function HelpForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setImageFile(e.target.files[0]);
-  };
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const data = new FormData();
-    Object.keys(form).forEach((key) => {
-      data.append(key, form[key]);
-    });
-    if (imageFile) {
-      data.append("image", imageFile);
+    try {
+      // ✅ Send JSON directly
+      const res = await axios.post(`${BASE_URL}/help/submit`, form, {
+        withCredentials: true,
+      });
+
+      setMessage(res.data.message || "✅ Request submitted successfully!");
+
+      // Reset form
+      setForm({
+        name: "",
+        state: "",
+        district: "",
+        phoneNo: "",
+        email: "",
+        help: "",
+      });
+
+      // Clear message after 3s
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      console.log(err); // for debugging
+      setMessage(err.response?.data?.error || "❌ Failed to submit request");
+      setTimeout(() => setMessage(""), 3000);
     }
 
-    const res = await axios.post(`${BASE_URL}/help/submit`, data, {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
-    });
-
-    // ✅ Show success message
-    setMessage(res.data.message || "✅ Request submitted successfully!");
-
-    // ✅ Reset form + file
-    setForm({
-      name: "",
-      state: "",
-      district: "",
-      phoneNo: "",
-      email: "",
-      help: "",
-    });
-    setImageFile(null);
-
-    // ✅ Auto clear success message after 3s
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-
-  } catch (err) {
-    setMessage(err.response?.data?.error || "❌ Failed to submit request");
-
-    // Clear error after 3s too
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  }
-
-  setLoading(false);
-};
-
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#bddcb8] flex flex-col items-center px-4 py-10">
-      {/* vacant space for navbar */}
       <div className="h-16 w-full"></div>
 
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-8 text-center">
@@ -161,14 +138,6 @@ export default function HelpForm() {
               className="md:col-span-2 w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-500 outline-none"
               required
             ></textarea>
-
-            {/* File upload */}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="md:col-span-2 w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 bg-white focus:ring-2 focus:ring-green-500 outline-none"
-            />
 
             <button
               type="submit"
