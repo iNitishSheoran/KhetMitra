@@ -26,6 +26,8 @@ function Diagnose() {
     storm: "सुरक्षित ✅",
   });
 
+  const [hoveredAlert, setHoveredAlert] = useState(null);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setData({
@@ -47,111 +49,74 @@ function Diagnose() {
   }, []);
 
   const cropSensors = [
-    {
-      title: "pH स्तर",
-      value: data.ph,
-      icon: <FlaskConical className="w-7 h-7 text-green-400" />,
-      unit: "",
-    },
-    {
-      title: "विद्युत चालकता",
-      value: data.conductivity,
-      icon: <Activity className="w-7 h-7 text-blue-400" />,
-      unit: " mS/cm",
-    },
-    {
-      title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)",
-      value: data.npk,
-      icon: <Leaf className="w-7 h-7 text-green-500" />,
-      unit: "",
-    },
-    {
-      title: "तापमान",
-      value: data.temperature,
-      icon: <Thermometer className="w-7 h-7 text-red-400" />,
-      unit: " °C",
-    },
-    {
-      title: "नमी",
-      value: data.moisture,
-      icon: <Droplets className="w-7 h-7 text-blue-500" />,
-      unit: " %",
-    },
+    { title: "pH स्तर", value: data.ph, icon: <FlaskConical className="w-7 h-7 text-green-300" />, unit: "" },
+    { title: "विद्युत चालकता", value: data.conductivity, icon: <Activity className="w-7 h-7 text-teal-300" />, unit: " mS/cm" },
+    { title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)", value: data.npk, icon: <Leaf className="w-7 h-7 text-green-400" />, unit: "" },
+    { title: "तापमान", value: data.temperature, icon: <Thermometer className="w-7 h-7 text-emerald-400" />, unit: " °C" },
+    { title: "नमी", value: data.moisture, icon: <Droplets className="w-7 h-7 text-cyan-400" />, unit: " %" },
   ];
 
   const environmentAlerts = [
-    {
-      title: "UV विकिरण",
-      value: data.uv,
-      icon: <Sun className="w-7 h-7 text-yellow-400" />,
-      unit: " mW/cm²",
-    },
-    {
-      title: "वर्षा सूचना",
-      value: data.rain,
-      icon: <CloudRain className="w-7 h-7 text-blue-400" />,
-      unit: "",
-    },
-    {
-      title: "पशु चराई सूचना",
-      value: data.grazing,
-      icon: <AlertTriangle className="w-7 h-7 text-orange-400" />,
-      unit: "",
-    },
-    {
-      title: "तेज़ हवा / आंधी अलर्ट",
-      value: data.storm,
-      icon: <Wind className="w-7 h-7 text-cyan-400" />,
-      unit: "",
-    },
+    { title: "UV विकिरण", value: data.uv, icon: <Sun className="w-7 h-7 text-yellow-400" />, unit: " mW/cm²" },
+    { title: "वर्षा सूचना", value: data.rain, icon: <CloudRain className="w-7 h-7 text-cyan-300" />, unit: "" },
+    { title: "पशु चराई सूचना", value: data.grazing, icon: <AlertTriangle className="w-7 h-7 text-lime-400" />, unit: "" },
+    { title: "तेज़ हवा / आंधी अलर्ट", value: data.storm, icon: <Wind className="w-7 h-7 text-teal-300" />, unit: "" },
   ];
 
+  const glowStyle = {
+    boxShadow: "0 0 16px 0.5px rgba(50, 205, 50, 0.3)",
+    border: "1px solid rgba(50, 205, 50, 0.7)",
+    background: "rgba(255,255,255,0.05)",
+  };
+
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-green-900 via-black to-blue-900 text-white overflow-hidden">
-      {/* Navbar fixed at top */}
+    <div className="relative w-full min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-blue-950 text-white overflow-hidden">
       <div className="fixed top-0 left-0 w-full z-50">
         <Navbar />
       </div>
 
-      {/* Push content below navbar */}
       <div className="pt-[64px] relative z-10">
-        {/* Animated glowing background */}
+        {/* Moving radial highlights */}
         <motion.div
           className="absolute inset-0"
           animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
           style={{
             backgroundImage:
-              "radial-gradient(circle at 20% 30%, rgba(34,197,94,0.3), transparent 70%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.3), transparent 70%)",
+              "radial-gradient(circle at 20% 30%, rgba(0, 255, 128,0.15), transparent 70%), radial-gradient(circle at 80% 70%, rgba(0, 255, 200,0.15), transparent 70%)",
             backgroundSize: "200% 200%",
           }}
         />
 
-        {/* Title */}
+        {/* Page Title */}
         <div className="relative z-10 p-8 text-center">
-          <h1 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg">
+          <h1 className="text-4xl font-extrabold text-green-300 drop-shadow-lg">
             🌾 खेत का लाइव निदान
           </h1>
-          <p className="text-lg text-gray-200 mt-2">
+          <p className="text-lg text-green-200 mt-2">
             वास्तविक समय के सेंसर और पर्यावरण अलर्ट
           </p>
         </div>
 
         {/* Crop Sensors */}
         <div className="relative z-10 px-6">
-          <h2 className="text-2xl font-bold text-green-300 mb-4">🌱 फसल स्वास्थ्य सेंसर</h2>
+          <h2 className="text-2xl font-bold text-green-300 mb-4">
+            🌱 फसल स्वास्थ्य सेंसर
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cropSensors.map((sensor, index) => (
               <motion.div
                 key={index}
-                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center border border-green-300/30 hover:border-yellow-300/50"
-                whileHover={{ scale: 1.07 }}
+                className="backdrop-blur-xl rounded-2xl p-6 flex flex-col items-center justify-center"
+                style={glowStyle}
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <div className="mb-3">{sensor.icon}</div>
                 <h2 className="text-lg font-semibold">{sensor.title}</h2>
-                <p className="text-2xl font-bold text-yellow-200 drop-shadow-md">
+                <p className="text-2xl font-bold text-green-200 drop-shadow-md">
                   {sensor.value}
-                  <span className="text-gray-200 text-lg">{sensor.unit}</span>
+                  <span className="text-gray-300 text-lg">{sensor.unit}</span>
                 </p>
               </motion.div>
             ))}
@@ -160,19 +125,30 @@ function Diagnose() {
 
         {/* Environment Alerts */}
         <div className="relative z-10 px-6 mt-10 mb-10">
-          <h2 className="text-2xl font-bold text-blue-300 mb-4">⚡ पर्यावरण अलर्ट</h2>
+          <h2 className="text-2xl font-bold text-green-300 mb-4">⚡ पर्यावरण अलर्ट</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             {environmentAlerts.map((alert, index) => (
               <motion.div
                 key={index}
-                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center border border-blue-300/30 hover:border-red-300/50"
-                whileHover={{ scale: 1.07 }}
+                className="backdrop-blur-xl rounded-2xl p-6 flex flex-col items-center justify-center"
+                style={glowStyle}
+                onMouseEnter={() => setHoveredAlert(index)}
+                onMouseLeave={() => setHoveredAlert(null)}
+                animate={{
+                  scale:
+                    hoveredAlert === null
+                      ? 1
+                      : hoveredAlert === index
+                      ? 1.05
+                      : 0.95,
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <div className="mb-3">{alert.icon}</div>
                 <h2 className="text-lg font-semibold">{alert.title}</h2>
                 <p className="text-xl font-bold text-green-200 drop-shadow-md">
                   {alert.value}
-                  <span className="text-gray-200 text-lg">{alert.unit}</span>
+                  <span className="text-gray-300 text-lg">{alert.unit}</span>
                 </p>
               </motion.div>
             ))}
