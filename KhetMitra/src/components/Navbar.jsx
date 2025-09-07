@@ -10,7 +10,7 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { isAuthenticated} = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   // ✅ Fetch user info when auth state changes
@@ -29,7 +29,6 @@ export default function Navbar() {
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
       setUser(null);
-      //setShowDropdown(false);
       navigate("/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -47,16 +46,16 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-gradient-to-r from-[#253900] to-[#08CB00] text-white flex fixed top-0 left-0 items-center justify-between pl-4 pr-6 py-3 shadow-md shadow-black/30 w-full z-[50]">
+    <nav className="bg-gradient-to-r from-[#0D1F1B] via-[#1B4332] to-[#081C15] text-white flex fixed top-0 left-0 items-center justify-between pl-4 pr-6 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.6)] w-full z-[50] border-b border-[#4ADE80]/40">
       {/* Logo */}
       <Link to="/">
-        <div className="flex items-center space-x-3 text-[#08CB00] text-2xl font-extrabold hover:scale-105 transition-transform">
+        <div className="flex items-center space-x-3 text-[#4ADE80] text-2xl font-extrabold hover:scale-105 transition-transform">
           <img
             src={logo}
             alt="Logo"
             className="w-14 h-14 ml-5 rounded-full shadow-md object-cover"
           />
-          <span className="text-white hover:text-[#08CB00] transition-colors">
+          <span className="text-white hover:text-[#FFD95A] transition-colors">
             KhetMitra
           </span>
         </div>
@@ -64,19 +63,34 @@ export default function Navbar() {
 
       {/* Nav Links */}
       <div className="hidden md:flex space-x-8 text-lg font-medium">
-        <Link to="/diagnose" className="hover:text-[#08CB00] transition-colors">
+        <Link
+          to="/diagnose"
+          className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200"
+        >
           Diagnose
         </Link>
-        <Link to="/cropData" className="hover:text-[#08CB00] transition-colors">
+        <Link
+          to="/cropData"
+          className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200"
+        >
           Crop Data
         </Link>
-        <Link to="/about" className="hover:text-[#08CB00] transition-colors">
+        <Link
+          to="/about"
+          className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200"
+        >
           About Us
         </Link>
-        <Link to="/help" className="hover:text-[#08CB00] transition-colors">
+        <Link
+          to="/help"
+          className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200"
+        >
           Help
         </Link>
-        <Link to="/enam" className="hover:text-[#08CB00] transition-colors">
+        <Link
+          to="/enam"
+          className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200"
+        >
           Enam
         </Link>
       </div>
@@ -89,37 +103,37 @@ export default function Navbar() {
             "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
           }
           onClick={() => setShowDropdown((prev) => !prev)}
-          className="h-11 w-11 rounded-full object-cover cursor-pointer border-2 border-[#08CB00] hover:shadow-[0_0_12px_#08CB00] transition"
+          className="h-11 w-11 rounded-full object-cover cursor-pointer border-2 border-[#FFD95A] hover:shadow-[0_0_12px_#FFD95A] transition"
           alt="profile"
         />
 
         {/* Dropdown */}
         {showDropdown && (
-          <div className="absolute top-[120%] right-0 mt-2 w-52 bg-[#1B1B1B] text-white rounded-lg shadow-lg flex flex-col border border-[#08CB00] z-[9999]">
+          <div className="absolute top-[120%] right-0 mt-2 w-52 bg-[#1B1B1B] text-white rounded-lg shadow-lg flex flex-col border border-[#4ADE80] z-[9999]">
             {/* Mobile Nav Links */}
             <div className="md:hidden flex flex-col">
-              <Link to="/" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 Home
               </Link>
-              <Link to="/diagnose" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/diagnose" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 Diagnose
               </Link>
-              <Link to="/cropData" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/cropData" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 Crop Data
               </Link>
-              <Link to="/about" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/about" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 About Us
               </Link>
-              <Link to="/help" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/help" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 Help
               </Link>
-              <Link to="/enam" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/enam" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 Enam
               </Link>
             </div>
 
             {!isAuthenticated && (
-              <Link to="/signup" className="px-4 py-2 hover:bg-[#08CB00]/20">
+              <Link to="/signup" className="px-4 py-2 hover:bg-[#4ADE80]/20">
                 Sign up
               </Link>
             )}
@@ -128,23 +142,22 @@ export default function Navbar() {
               <>
                 <Link
                   to="/myProfile"
-                  className="px-4 py-2 hover:bg-[#08CB00]/20 border-t border-gray-700"
+                  className="px-4 py-2 hover:bg-[#4ADE80]/20 border-t border-gray-700"
                 >
                   My Profile
                 </Link>
 
-                {/* 🔑 Admins see AllHelp, Users see My Requests */}
                 {user?.isAdmin ? (
                   <Link
                     to="/allHelp"
-                    className="px-4 py-2 hover:bg-[#08CB00]/20"
+                    className="px-4 py-2 hover:bg-[#4ADE80]/20"
                   >
                     All Help
                   </Link>
                 ) : (
                   <Link
                     to="/my-requests"
-                    className="px-4 py-2 hover:bg-[#08CB00]/20"
+                    className="px-4 py-2 hover:bg-[#4ADE80]/20"
                   >
                     My Requests
                   </Link>
