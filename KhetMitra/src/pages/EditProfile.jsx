@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { BASE_URL } from "../config";
+import { FaUser, FaPhoneAlt, FaLeaf, FaMapMarkerAlt } from "react-icons/fa";
 
 export default function EditProfile() {
   const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ export default function EditProfile() {
     try {
       const payload = {
         ...formData,
-        age: Number(formData.age), // convert age to number
+        age: Number(formData.age),
         crops: formData.crops.split(",").map((c) => c.trim()).filter(Boolean),
       };
 
@@ -64,9 +65,7 @@ export default function EditProfile() {
       setSuccessMessage("✅ Profile updated successfully!");
       toast.success("Profile updated successfully!");
 
-      // Navigate after 3 seconds
-      setTimeout(() => navigate("/myProfile"), 3000);
-
+      setTimeout(() => navigate("/myProfile"), 2500);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "❌ Failed to update profile.");
@@ -78,7 +77,7 @@ export default function EditProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-50 text-red-500">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-amber-100 text-red-600">
         <p>{error}</p>
       </div>
     );
@@ -87,93 +86,117 @@ export default function EditProfile() {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen bg-green-50 pt-24 px-4 flex justify-center items-start pb-20">
-        <div className="bg-white text-black rounded-3xl shadow-md max-w-3xl w-full p-10">
-          <div className="text-center mb-6">
-            <h2 className="text-4xl font-extrabold text-green-700">Edit Your Profile ✏️</h2>
-            <p className="text-gray-600 text-sm mt-2">
-              Make changes and save to update your info.
+      {/* 🌾 Gradient Background */}
+      <div className="min-h-screen bg-gradient-to-br from-amber-100 via-green-100 to-sky-100 pt-24 px-4 flex justify-center items-start pb-20">
+        {/* Glass Card */}
+        <div className="bg-white/40 backdrop-blur-lg text-green-900 rounded-3xl shadow-2xl max-w-3xl w-full p-10 border border-white/50">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-amber-600 bg-clip-text text-transparent">
+              Edit Your Profile ✏️
+            </h2>
+            <p className="text-green-700 text-sm mt-2">
+              Update your details and save changes.
             </p>
             {successMessage && (
-              <p className="mt-2 text-green-700 font-semibold">{successMessage}</p>
+              <p className="mt-3 text-green-700 font-semibold">{successMessage}</p>
             )}
           </div>
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <input
+            {/* Full Name */}
+            <InputField
+              icon={<FaUser />}
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Full Name"
-              className="w-full px-4 py-2 rounded border border-gray-300"
               required
             />
 
+            {/* Phone + State */}
             <div className="flex flex-col md:flex-row gap-4">
-              <input
+              <InputField
+                icon={<FaPhoneAlt />}
                 type="text"
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleInputChange}
                 placeholder="Phone Number"
-                className="flex-1 px-4 py-2 rounded border border-gray-300"
                 required
               />
-              <input
+              <InputField
+                icon={<FaMapMarkerAlt />}
                 type="text"
                 name="state"
                 value={formData.state}
                 onChange={handleInputChange}
                 placeholder="State"
-                className="flex-1 px-4 py-2 rounded border border-gray-300"
                 required
               />
             </div>
 
+            {/* District + Crops */}
             <div className="flex flex-col md:flex-row gap-4">
-              <input
+              <InputField
+                icon={<FaMapMarkerAlt />}
                 type="text"
                 name="district"
                 value={formData.district}
                 onChange={handleInputChange}
                 placeholder="District"
-                className="flex-1 px-4 py-2 rounded border border-gray-300"
                 required
               />
-              <input
+              <InputField
+                icon={<FaLeaf />}
                 type="text"
                 name="crops"
                 value={formData.crops}
                 onChange={handleInputChange}
                 placeholder="Crops (comma separated)"
-                className="flex-1 px-4 py-2 rounded border border-gray-300"
                 required
               />
             </div>
 
-            <input
+            {/* Age */}
+            <InputField
+              icon={<FaUser />}
               type="number"
               name="age"
               value={formData.age}
               onChange={handleInputChange}
               placeholder="Age"
-              className="w-full px-4 py-2 rounded border border-gray-300"
               min={18}
               max={100}
               required
             />
 
+            {/* Save Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700"
+              className="w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
-              {loading ? "Saving..." : "Save Changes"}
+              {loading ? "Saving..." : "💾 Save Changes"}
             </button>
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* Reusable Input Component */
+function InputField({ icon, ...props }) {
+  return (
+    <div className="relative flex items-center border border-green-300 rounded-xl p-3 bg-white/50 backdrop-blur-md focus-within:ring-2 focus-within:ring-green-500 transition shadow-sm hover:shadow-md">
+      <span className="text-green-600 mr-3 text-lg">{icon}</span>
+      <input
+        {...props}
+        className="w-full outline-none bg-transparent placeholder-green-600 text-green-900"
+      />
     </div>
   );
 }
