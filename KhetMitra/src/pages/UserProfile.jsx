@@ -10,6 +10,7 @@ import { ClipLoader } from "react-spinners";
 export default function UserProfile() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -37,6 +38,10 @@ export default function UserProfile() {
     );
   }
 
+  const imageUrl =
+    user.photoUrl ||
+    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
+
   return (
     <div className="relative">
       <Navbar />
@@ -58,9 +63,14 @@ export default function UserProfile() {
 
           {/* Profile Info */}
           <div className="flex flex-col items-center gap-4">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-green-400 to-amber-300 flex items-center justify-center text-3xl font-bold shadow-lg border-4 border-white/60">
-              {user.fullName.charAt(0)}
-            </div>
+            {/* Profile Photo */}
+            <img
+              src={imageUrl}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-white/60 cursor-pointer"
+              onClick={() => setIsImageOpen(true)}
+            />
+
             <h3 className="text-2xl font-semibold text-green-900">{user.fullName}</h3>
             <p className="text-green-700 font-medium mt-1 flex items-center gap-2">
               <MdEmail /> {user.emailId}
@@ -89,6 +99,31 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+
+      {/* 🟡 Floating Image Preview */}
+      {isImageOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          onClick={() => setIsImageOpen(false)}
+        >
+          <div
+            className="relative backdrop-blur-md bg-white/70 p-6 rounded-2xl shadow-2xl border border-green-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={imageUrl}
+              alt="Enlarged Profile"
+              className="w-64 h-64 rounded-full object-cover border-4 border-green-500"
+            />
+            <button
+              onClick={() => setIsImageOpen(false)}
+              className="absolute -top-2 -right-2 bg-red-600 text-white font-bold w-7 h-7 flex items-center justify-center rounded-md shadow hover:bg-red-700"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

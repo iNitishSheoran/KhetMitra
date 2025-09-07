@@ -15,38 +15,61 @@ export default function EditProfile() {
     crops: "",
     age: "",
   });
+  const [originalData, setOriginalData] = useState({});
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
-  // Fetch existing profile
+  // ✅ Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/profile/view`, { withCredentials: true });
+        const res = await axios.get(`${BASE_URL}/profile/view`, {
+          withCredentials: true,
+        });
         const user = res.data;
-        setFormData({
+
+        const mappedData = {
           fullName: user.fullName || "",
           phoneNumber: user.phoneNumber || "",
           state: user.state || "",
           district: user.district || "",
-          crops: user.crops?.join(", ") || "",
+          crops: Array.isArray(user.crops) ? user.crops.join(", ") : "",
           age: user.age || "",
-        });
+        };
+
+        setFormData(mappedData);
+        setOriginalData(mappedData);
+
+        if (user.photoUrl) setPreview(user.photoUrl);
       } catch (err) {
         console.error(err);
         setError("❌ Failed to load profile");
       }
     };
+
     fetchProfile();
   }, []);
 
+  // ✅ Input handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ✅ File handler
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePhoto(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  // ✅ Submit handler (only send changed fields + photo)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,13 +77,40 @@ export default function EditProfile() {
     setSuccessMessage("");
 
     try {
-      const payload = {
-        ...formData,
-        age: Number(formData.age),
-        crops: formData.crops.split(",").map((c) => c.trim()).filter(Boolean),
-      };
+      const data = new FormData();
 
-      await axios.patch(`${BASE_URL}/profile/edit`, payload, { withCredentials: true });
+      // Append only changed fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== originalData[key]) {
+          if (key === "crops") {
+            data.append(
+              "crops",
+              value
+                .split(",")
+                .map((c) => c.trim())
+                .filter(Boolean)
+            );
+          } else {
+            data.append(key, value);
+          }
+        }
+      });
+
+      // Append photo only if selected
+      if (profilePhoto) {
+        data.append("profilePhoto", profilePhoto);
+      }
+
+      if ([...data.keys()].length === 0) {
+        toast("⚠️ No changes to update");
+        setLoading(false);
+        return;
+      }
+
+      await axios.patch(`${BASE_URL}/profile/edit`, data, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       setSuccessMessage("✅ Profile updated successfully!");
       toast.success("Profile updated successfully!");
@@ -75,6 +125,7 @@ export default function EditProfile() {
     }
   };
 
+  // ✅ Error screen
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-amber-100 text-red-600">
@@ -86,9 +137,7 @@ export default function EditProfile() {
   return (
     <div>
       <Navbar />
-      {/* 🌾 Gradient Background */}
       <div className="min-h-screen bg-gradient-to-br from-amber-100 via-green-100 to-sky-100 pt-24 px-4 flex justify-center items-start pb-20">
-        {/* Glass Card */}
         <div className="bg-white/40 backdrop-blur-lg text-green-900 rounded-3xl shadow-2xl max-w-3xl w-full p-10 border border-white/50">
           {/* Header */}
           <div className="text-center mb-8">
@@ -105,6 +154,23 @@ export default function EditProfile() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Profile Photo Upload */}
+            <div className="flex flex-col items-center">
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-green-300 mb-3"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="text-sm text-green-700"
+              />
+            </div>
+
             {/* Full Name */}
             <InputField
               icon={<FaUser />}
@@ -156,7 +222,6 @@ export default function EditProfile() {
                 value={formData.crops}
                 onChange={handleInputChange}
                 placeholder="Crops (comma separated)"
-                required
               />
             </div>
 
@@ -188,7 +253,7 @@ export default function EditProfile() {
   );
 }
 
-/* Reusable Input Component */
+/* ✅ Reusable Input Component */
 function InputField({ icon, ...props }) {
   return (
     <div className="relative flex items-center border border-green-300 rounded-xl p-3 bg-white/50 backdrop-blur-md focus-within:ring-2 focus-within:ring-green-500 transition shadow-sm hover:shadow-md">
