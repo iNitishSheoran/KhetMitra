@@ -29,7 +29,7 @@ function App() {
         <Route path="/diagnose" element={<Diagnose/>} />
         <Route path="/myProfile" element={<UserProfile/>} />
         <Route path="/editProfile" element={<EditProfile/>} />
-        <Route path="/enam" element={<Daam/>} />
+        <Route path="/daam" element={<Daam/>} />
       </Routes>
     </div>
   );

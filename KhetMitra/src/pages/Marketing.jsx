@@ -2,6 +2,7 @@ import React from "react";
 import M1 from "../assets/M1.png";
 import M2 from "../assets/M2.png";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 function Marketing() {
   return (
@@ -49,9 +50,11 @@ function Marketing() {
             दवा और इलाज की सही सलाह मिले 💊।  
             खेतमित्र से खेती होगी आसान और नुकसान होगा कम।
           </p>
+          <Link to="/cropData">
           <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
             अभी आज़माएँ 🚀
           </button>
+          </Link>
         </motion.div>
       </div>
 
@@ -70,9 +73,11 @@ function Marketing() {
             एआई से जुड़ी मंडी जानकारी के साथ अपनी फसल को बेचें सही भाव पर।  
             रीयल-टाइम अपडेट्स 📊, दाम का रुझान 📈 और अलर्ट से कमाई होगी ज़्यादा।
           </p>
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
-            मंडी भाव देखें 📊
-          </button>
+          <Link to="/daam">
+  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
+    मंडी भाव देखें 📊
+  </button>
+</Link>
         </motion.div>
 
         {/* दायीं तरफ़ इमेज */}

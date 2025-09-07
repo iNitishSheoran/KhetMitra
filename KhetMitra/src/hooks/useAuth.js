@@ -1,4 +1,3 @@
-// src/hooks/useAuth.js
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config";
@@ -6,7 +5,9 @@ import { BASE_URL } from "../config";
 export default function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(null); // null = loading
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
+  // Check authentication status
   const checkAuth = useCallback(async () => {
     setLoading(true);
     try {
@@ -19,10 +20,25 @@ export default function useAuth() {
     }
   }, []);
 
+  // Fetch user info
+  const refreshUser = useCallback(async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/profile/view`, { withCredentials: true });
+    setUser(res.data);
+  } catch {
+    setUser(null);
+  }
+}, []);
+
+  // Run on mount and when auth state changes
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  // return object so components can call refreshAuth()
-  return { isAuthenticated, loading, refreshAuth: checkAuth };
+  useEffect(() => {
+    if (isAuthenticated) refreshUser();
+    else setUser(null);
+  }, [isAuthenticated, refreshUser]);
+
+  return { isAuthenticated, loading, user, refreshUser, refreshAuth: checkAuth };
 }

@@ -1,36 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import Navbar from "../components/Navbar";
 import { FaPhoneAlt, FaLeaf, FaMapMarkerAlt, FaUser, FaTractor } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import { BASE_URL } from "../config";
 import { ClipLoader } from "react-spinners";
+import { useUser } from "../context/UserContext.jsx"; // ✅ using context
 
 export default function UserProfile() {
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
+  const { user, loading } = useUser(); // ✅ pull user from context
   const [isImageOpen, setIsImageOpen] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get(`${BASE_URL}/profile/view`, { withCredentials: true })
-      .then((res) => setUser(res.data))
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load profile");
-      });
-  }, []);
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-yellow-100 text-red-600">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!user) {
+  if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-100 to-yellow-100">
         <ClipLoader color="#22c55e" size={60} />
@@ -38,15 +18,23 @@ export default function UserProfile() {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-yellow-100 text-red-600">
+        <p>Failed to load profile</p>
+      </div>
+    );
+  }
+
   const imageUrl =
-    user.photoUrl ||
+    user?.photoUrl ||
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
   return (
     <div className="relative">
       <Navbar />
 
-      {/* 🌅 Farming sunrise gradient background */}
+      {/* 🌅 Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-green-100 to-sky-200"></div>
 
       <div className="min-h-screen relative pt-[7rem] px-4 flex justify-center items-start pb-[6rem]">
@@ -54,7 +42,7 @@ export default function UserProfile() {
           {/* Header */}
           <div className="text-center mb-10">
             <h2 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-amber-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
-              Welcome, {user.fullName.split(" ")[0]} 🌾
+              Welcome, {user?.fullName?.split(" ")[0] || "Farmer"} 🌾
             </h2>
             <p className="text-green-700 text-sm mt-2 flex items-center justify-center gap-2">
               <FaTractor className="text-green-600" /> Your farming dashboard
@@ -63,7 +51,6 @@ export default function UserProfile() {
 
           {/* Profile Info */}
           <div className="flex flex-col items-center gap-4">
-            {/* Profile Photo */}
             <img
               src={imageUrl}
               alt="Profile"
@@ -71,9 +58,11 @@ export default function UserProfile() {
               onClick={() => setIsImageOpen(true)}
             />
 
-            <h3 className="text-2xl font-semibold text-green-900">{user.fullName}</h3>
+            <h3 className="text-2xl font-semibold text-green-900">
+              {user?.fullName || "Name not provided"}
+            </h3>
             <p className="text-green-700 font-medium mt-1 flex items-center gap-2">
-              <MdEmail /> {user.emailId}
+              <MdEmail /> {user?.emailId || "No email"}
             </p>
             <Link to="/editProfile">
               <button className="mt-4 px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:scale-105 transition">
@@ -91,16 +80,20 @@ export default function UserProfile() {
 
           {/* Info Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DetailCard icon={<FaPhoneAlt />} label="Phone" value={user.phoneNumber} />
-            <DetailCard icon={<FaMapMarkerAlt />} label="State" value={user.state} />
-            <DetailCard icon={<FaMapMarkerAlt />} label="District" value={user.district} />
-            <DetailCard icon={<FaLeaf />} label="Crops" value={user.crops?.join(", ")} />
-            <DetailCard icon={<FaUser />} label="Age" value={user.age} />
+            <DetailCard icon={<FaPhoneAlt />} label="Phone" value={user?.phoneNumber} />
+            <DetailCard icon={<FaMapMarkerAlt />} label="State" value={user?.state} />
+            <DetailCard icon={<FaMapMarkerAlt />} label="District" value={user?.district} />
+            <DetailCard
+              icon={<FaLeaf />}
+              label="Crops"
+              value={user?.crops?.length ? user.crops.join(", ") : "Not provided"}
+            />
+            <DetailCard icon={<FaUser />} label="Age" value={user?.age} />
           </div>
         </div>
       </div>
 
-      {/* 🟡 Floating Image Preview */}
+      {/* Enlarged Profile Image */}
       {isImageOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"

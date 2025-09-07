@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { BASE_URL } from "../config";
 import { FaUser, FaPhoneAlt, FaLeaf, FaMapMarkerAlt } from "react-icons/fa";
+import { useUser } from "../context/UserContext.jsx"; // ✅ updated import
 
 export default function EditProfile() {
   const [formData, setFormData] = useState({
@@ -22,10 +23,13 @@ export default function EditProfile() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  const { refreshUser } = useUser(); // ✅ updated usage
 
-  // ✅ Fetch profile on mount
+  // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true);
+      setError("");
       try {
         const res = await axios.get(`${BASE_URL}/profile/view`, {
           withCredentials: true,
@@ -43,24 +47,23 @@ export default function EditProfile() {
 
         setFormData(mappedData);
         setOriginalData(mappedData);
-
         if (user.photoUrl) setPreview(user.photoUrl);
       } catch (err) {
         console.error(err);
-        setError("❌ Failed to load profile");
+        setError("❌ Failed to load profile. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
   }, []);
 
-  // ✅ Input handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ File handler
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -69,7 +72,6 @@ export default function EditProfile() {
     }
   };
 
-  // ✅ Submit handler (only send changed fields + photo)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -96,10 +98,7 @@ export default function EditProfile() {
         }
       });
 
-      // Append photo only if selected
-      if (profilePhoto) {
-        data.append("profilePhoto", profilePhoto);
-      }
+      if (profilePhoto) data.append("profilePhoto", profilePhoto);
 
       if ([...data.keys()].length === 0) {
         toast("⚠️ No changes to update");
@@ -114,47 +113,52 @@ export default function EditProfile() {
 
       setSuccessMessage("✅ Profile updated successfully!");
       toast.success("Profile updated successfully!");
+      refreshUser(); // ✅ synced with UserContext
 
       setTimeout(() => navigate("/myProfile"), 2500);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "❌ Failed to update profile.");
-      toast.error(err.response?.data?.message || "Failed to update profile.");
+      const msg = err.response?.data?.message || "❌ Failed to update profile.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Error screen
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-amber-100 text-red-600">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-green-100 to-sky-100">
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-amber-100 via-green-100 to-sky-100 pt-24 px-4 flex justify-center items-start pb-20">
+      <div className="pt-24 px-4 flex justify-center items-start pb-20">
         <div className="bg-white/40 backdrop-blur-lg text-green-900 rounded-3xl shadow-2xl max-w-3xl w-full p-10 border border-white/50">
+          
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h2 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-amber-600 bg-clip-text text-transparent">
               Edit Your Profile ✏️
             </h2>
             <p className="text-green-700 text-sm mt-2">
               Update your details and save changes.
             </p>
-            {successMessage && (
-              <p className="mt-3 text-green-700 font-semibold">{successMessage}</p>
-            )}
           </div>
+
+          {/* Inline Error */}
+          {error && (
+            <div className="bg-red-200 text-red-800 p-3 rounded mb-4 text-center font-semibold shadow-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Inline Success */}
+          {successMessage && (
+            <div className="bg-green-200 text-green-800 p-3 rounded mb-4 text-center font-semibold shadow-sm">
+              {successMessage}
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Profile Photo Upload */}
+            {/* Profile Photo */}
             <div className="flex flex-col items-center">
               {preview && (
                 <img
@@ -238,7 +242,7 @@ export default function EditProfile() {
               required
             />
 
-            {/* Save Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -253,7 +257,7 @@ export default function EditProfile() {
   );
 }
 
-/* ✅ Reusable Input Component */
+/* Reusable Input Field */
 function InputField({ icon, ...props }) {
   return (
     <div className="relative flex items-center border border-green-300 rounded-xl p-3 bg-white/50 backdrop-blur-md focus-within:ring-2 focus-within:ring-green-500 transition shadow-sm hover:shadow-md">
