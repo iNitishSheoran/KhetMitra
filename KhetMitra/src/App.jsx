@@ -10,7 +10,8 @@ import AdminAllHelp from './pages/AdminAllHelp';
 import About from './pages/About';
 import Diagnose from './pages/Diagnose';
 import UserProfile from './pages/UserProfile';
-import EditProfile from "./pages/EditProfile"
+import EditProfile from "./pages/EditProfile";
+import Daam from "./pages/Daam";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/diagnose" element={<Diagnose/>} />
         <Route path="/myProfile" element={<UserProfile/>} />
         <Route path="/editProfile" element={<EditProfile/>} />
+        <Route path="/enam" element={<Daam/>} />
       </Routes>
     </div>
   );
