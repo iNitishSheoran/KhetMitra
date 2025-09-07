@@ -1,1 +1,1 @@
-export const BASE_URL = "http://localhost:2713";
+export const BASE_URL = "https://khetmitra-be.onrender.com";
