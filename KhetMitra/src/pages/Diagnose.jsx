@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import {
   Thermometer,
@@ -107,71 +108,75 @@ function Diagnose() {
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-green-900 via-black to-blue-900 text-white overflow-hidden">
-      {/* Animated glowing background */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 30%, rgba(34,197,94,0.3), transparent 70%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.3), transparent 70%)",
-          backgroundSize: "200% 200%",
-        }}
-      />
-
-      {/* Title */}
-      <div className="relative z-10 p-8 text-center">
-        <h1 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg">
-          🌾 खेत का लाइव निदान
-        </h1>
-        <p className="text-lg text-gray-200 mt-2">
-          वास्तविक समय के सेंसर और पर्यावरण अलर्ट
-        </p>
+      {/* Navbar fixed at top */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Navbar />
       </div>
 
-      {/* Crop Sensors */}
-      <div className="relative z-10 px-6">
-        <h2 className="text-2xl font-bold text-green-300 mb-4">
-          🌱 फसल स्वास्थ्य सेंसर
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cropSensors.map((sensor, index) => (
-            <motion.div
-              key={index}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center border border-green-300/30 hover:border-yellow-300/50"
-              whileHover={{ scale: 1.07 }}
-            >
-              <div className="mb-3">{sensor.icon}</div>
-              <h2 className="text-lg font-semibold">{sensor.title}</h2>
-              <p className="text-2xl font-bold text-yellow-200 drop-shadow-md">
-                {sensor.value}
-                <span className="text-gray-200 text-lg">{sensor.unit}</span>
-              </p>
-            </motion.div>
-          ))}
+      {/* Push content below navbar */}
+      <div className="pt-[64px] relative z-10">
+        {/* Animated glowing background */}
+        <motion.div
+          className="absolute inset-0"
+          animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 30%, rgba(34,197,94,0.3), transparent 70%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.3), transparent 70%)",
+            backgroundSize: "200% 200%",
+          }}
+        />
+
+        {/* Title */}
+        <div className="relative z-10 p-8 text-center">
+          <h1 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg">
+            🌾 खेत का लाइव निदान
+          </h1>
+          <p className="text-lg text-gray-200 mt-2">
+            वास्तविक समय के सेंसर और पर्यावरण अलर्ट
+          </p>
         </div>
-      </div>
 
-      {/* Environment Alerts */}
-      <div className="relative z-10 px-6 mt-10 mb-10">
-        <h2 className="text-2xl font-bold text-blue-300 mb-4">
-          ⚡ पर्यावरण अलर्ट
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          {environmentAlerts.map((alert, index) => (
-            <motion.div
-              key={index}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center border border-blue-300/30 hover:border-red-300/50"
-              whileHover={{ scale: 1.07 }}
-            >
-              <div className="mb-3">{alert.icon}</div>
-              <h2 className="text-lg font-semibold">{alert.title}</h2>
-              <p className="text-xl font-bold text-green-200 drop-shadow-md">
-                {alert.value}
-                <span className="text-gray-200 text-lg">{alert.unit}</span>
-              </p>
-            </motion.div>
-          ))}
+        {/* Crop Sensors */}
+        <div className="relative z-10 px-6">
+          <h2 className="text-2xl font-bold text-green-300 mb-4">🌱 फसल स्वास्थ्य सेंसर</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cropSensors.map((sensor, index) => (
+              <motion.div
+                key={index}
+                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center border border-green-300/30 hover:border-yellow-300/50"
+                whileHover={{ scale: 1.07 }}
+              >
+                <div className="mb-3">{sensor.icon}</div>
+                <h2 className="text-lg font-semibold">{sensor.title}</h2>
+                <p className="text-2xl font-bold text-yellow-200 drop-shadow-md">
+                  {sensor.value}
+                  <span className="text-gray-200 text-lg">{sensor.unit}</span>
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Environment Alerts */}
+        <div className="relative z-10 px-6 mt-10 mb-10">
+          <h2 className="text-2xl font-bold text-blue-300 mb-4">⚡ पर्यावरण अलर्ट</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            {environmentAlerts.map((alert, index) => (
+              <motion.div
+                key={index}
+                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center border border-blue-300/30 hover:border-red-300/50"
+                whileHover={{ scale: 1.07 }}
+              >
+                <div className="mb-3">{alert.icon}</div>
+                <h2 className="text-lg font-semibold">{alert.title}</h2>
+                <p className="text-xl font-bold text-green-200 drop-shadow-md">
+                  {alert.value}
+                  <span className="text-gray-200 text-lg">{alert.unit}</span>
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

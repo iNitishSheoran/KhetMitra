@@ -6,7 +6,11 @@ import Login from './pages/Login';
 import HelpForm from './pages/HelpForm';
 import MyRequests from './pages/MyRequests';
 import CropPage from './pages/CropPage';
-// import AdminHelpPage from './pages/AdminHelpPage';
+import AdminAllHelp from './pages/AdminAllHelp';
+import About from './pages/About';
+import Diagnose from './pages/Diagnose';
+import UserProfile from './pages/UserProfile';
+import EditProfile from "./pages/EditProfile"
 
 function App() {
   return (
@@ -18,9 +22,12 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/help" element={<HelpForm />} />
         <Route path="/my-requests" element={<MyRequests />} />
-        <Route path="/cropDetails" element={<CropPage/>}/>
-        {/*
-        <Route path="/admin/help" element={<AdminHelpPage />} /> */}
+        <Route path="/cropData" element={<CropPage/>}/>
+        <Route path="/allHelp" element={<AdminAllHelp/>} />
+        <Route path="/about" element={<About/>} />
+        <Route path="/diagnose" element={<Diagnose/>} />
+        <Route path="/myProfile" element={<UserProfile/>} />
+        <Route path="/editProfile" element={<EditProfile/>} />
       </Routes>
     </div>
   );

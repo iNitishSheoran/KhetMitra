@@ -3,6 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import HelpImage from "../assets/Help.png";
+import Navbar from "../components/Navbar";
 
 export default function HelpForm() {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ export default function HelpForm() {
 
   return (
     <div className="min-h-screen bg-[#bddcb8] flex flex-col items-center px-4 py-10">
+      <Navbar/>
       <div className="h-16 w-full"></div>
 
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-8 text-center">

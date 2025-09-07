@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config";
+import Navbar from "../components/Navbar";
 import {
   Sprout,
   Droplet,
@@ -77,6 +78,7 @@ export default function CropPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6 mt-16 space-y-8">
+      <Navbar/>
       {/* Page Title */}
       <h1 className="text-4xl font-extrabold text-center text-green-800 flex items-center justify-center gap-2">
         <Sprout className="w-8 h-8 text-green-600" />

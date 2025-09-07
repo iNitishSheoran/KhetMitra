@@ -16,14 +16,15 @@ export default function AdminAllHelp() {
 
   const fetchAllRequests = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/help/all`, {
-        withCredentials: true,
-      });
-      setRequests(res.data);
+      const res = await axios.get(`${BASE_URL}/help/all`, { withCredentials: true });
+
+      // Filter out requests that already have answers
+      const unansweredRequests = res.data.filter((req) => !req.answer);
+      setRequests(unansweredRequests);
 
       const initialAnswers = {};
       const submittedStatus = {};
-      res.data.forEach((req) => {
+      unansweredRequests.forEach((req) => {
         initialAnswers[req._id] = req.answer || "";
         submittedStatus[req._id] = !!req.answer;
       });
@@ -38,8 +39,8 @@ export default function AdminAllHelp() {
   };
 
   const handleAnswerChange = (id, value) => {
+    if (submittedMap[id]) return; // prevent editing after submission
     setAnswerMap((prev) => ({ ...prev, [id]: value }));
-    setSubmittedMap((prev) => ({ ...prev, [id]: false }));
   };
 
   const handleSubmitAnswer = async (id) => {
@@ -47,23 +48,22 @@ export default function AdminAllHelp() {
     if (!answer.trim()) return alert("Answer cannot be empty.");
 
     try {
-      await axios.patch(
-        `${BASE_URL}/help/answer/${id}`,
-        { answer },
-        { withCredentials: true }
-      );
+      await axios.patch(`${BASE_URL}/help/answer/${id}`, { answer }, { withCredentials: true });
+
       setSubmittedMap((prev) => ({ ...prev, [id]: true }));
       setMessageMap((prev) => ({ ...prev, [id]: "✅ Answer submitted!" }));
 
+      // Remove request from state after 3 seconds
       setTimeout(() => {
         setMessageMap((prev) => {
           const newMap = { ...prev };
           delete newMap[id];
           return newMap;
         });
+
+        setRequests((prev) => prev.filter((req) => req._id !== id));
       }, 3000);
 
-      fetchAllRequests();
     } catch (err) {
       console.error("Error submitting answer:", err);
       setMessageMap((prev) => ({ ...prev, [id]: "❌ Failed to submit answer." }));
@@ -84,7 +84,6 @@ export default function AdminAllHelp() {
   return (
     <div>
       <Navbar />
-
       <div className="min-h-screen bg-[#0B3D2E] text-white pt-[6rem] pb-[6rem]">
         <h2 className="text-3xl font-bold text-[#2ECC71] text-center mb-8">
           Admin – All Help Requests
@@ -96,9 +95,7 @@ export default function AdminAllHelp() {
               key={req._id}
               className="bg-white text-black rounded-xl shadow-md p-6 mx-[3rem] space-y-2"
             >
-              <p className="text-lg font-semibold text-[#0B3D2E]">
-                🧑‍🌾 {req.name}
-              </p>
+              <p className="text-lg font-semibold text-[#0B3D2E]">🧑‍🌾 {req.name}</p>
               <p className="text-sm text-gray-700 italic">
                 📧 {req.email} | 📞 {req.phoneNo}
               </p>
@@ -106,8 +103,7 @@ export default function AdminAllHelp() {
                 🌍 {req.state}, {req.district}
               </p>
               <p className="text-md mt-2">
-                <span className="font-semibold text-[#2ECC71]">Help:</span>{" "}
-                {req.help}
+                <span className="font-semibold text-[#2ECC71]">Help:</span> {req.help}
               </p>
 
               {req.imageUrl && (
@@ -121,16 +117,14 @@ export default function AdminAllHelp() {
                 </a>
               )}
 
-              {/* Answer Section */}
               <div className="mt-4">
-                <label className="block font-medium text-gray-800 mb-1">
-                  Answer:
-                </label>
+                <label className="block font-medium text-gray-800 mb-1">Answer:</label>
                 <textarea
                   className="w-full p-2 rounded border border-gray-300 bg-[#f3f3f3]"
                   rows="3"
                   value={answerMap[req._id] ?? ""}
                   onChange={(e) => handleAnswerChange(req._id, e.target.value)}
+                  disabled={submittedMap[req._id]} // cannot edit after submission
                 />
 
                 {messageMap[req._id] && (
