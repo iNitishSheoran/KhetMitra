@@ -1,7 +1,7 @@
 import React from "react";
 import { Typewriter } from "react-simple-typewriter";
 import Navbar from "../components/Navbar";
-import farmerImg from "../assets/farmer.png";
+import farmerImg from "../assets/About.png";
 
 function About() {
   return (
