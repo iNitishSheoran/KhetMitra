@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import {
@@ -14,53 +14,23 @@ import {
 } from "lucide-react";
 
 function Diagnose() {
-  const [data, setData] = useState({
-    ph: 6.5,
-    conductivity: 1.2,
-    npk: "N:45 P:30 K:25",
-    temperature: 28,
-    moisture: 60,
-    uv: 3.2,
-    rain: "नहीं हो रही 🌤️",
-    grazing: "कोई पशु पास नहीं 🐄",
-    storm: "सुरक्षित ✅",
-  });
-
   const [hoveredAlert, setHoveredAlert] = useState(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setData({
-        ph: (6 + Math.random()).toFixed(2),
-        conductivity: (1 + Math.random() * 2).toFixed(2),
-        npk: `N:${Math.floor(Math.random() * 100)} P:${Math.floor(
-          Math.random() * 100
-        )} K:${Math.floor(Math.random() * 100)}`,
-        temperature: (25 + Math.random() * 10).toFixed(1),
-        moisture: (40 + Math.random() * 30).toFixed(0),
-        uv: (1 + Math.random() * 10).toFixed(1),
-        rain: Math.random() > 0.7 ? "बारिश हो रही है 🌧️" : "नहीं हो रही 🌤️",
-        grazing: Math.random() > 0.6 ? "पशु खेत में हैं ⚠️" : "कोई पशु पास नहीं 🐄",
-        storm: Math.random() > 0.8 ? "⚠️ तेज़ हवा/आंधी" : "सुरक्षित ✅",
-      });
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const unavailableText = "Device Unavailable";
 
   const cropSensors = [
-    { title: "pH स्तर", value: data.ph, icon: <FlaskConical className="w-7 h-7 text-emerald-300" />, unit: "" },
-    { title: "विद्युत चालकता", value: data.conductivity, icon: <Activity className="w-7 h-7 text-teal-300" />, unit: " mS/cm" },
-    { title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)", value: data.npk, icon: <Leaf className="w-7 h-7 text-green-300" />, unit: "" },
-    { title: "तापमान", value: data.temperature, icon: <Thermometer className="w-7 h-7 text-orange-400" />, unit: " °C" },
-    { title: "नमी", value: data.moisture, icon: <Droplets className="w-7 h-7 text-cyan-300" />, unit: " %" },
+    { title: "pH स्तर", value: unavailableText, icon: <FlaskConical className="w-7 h-7 text-emerald-300" />, unit: "" },
+    { title: "विद्युत चालकता", value: unavailableText, icon: <Activity className="w-7 h-7 text-teal-300" />, unit: "" },
+    { title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)", value: unavailableText, icon: <Leaf className="w-7 h-7 text-green-300" />, unit: "" },
+    { title: "तापमान", value: unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" />, unit: "" },
+    { title: "नमी", value: unavailableText, icon: <Droplets className="w-7 h-7 text-cyan-300" />, unit: "" },
   ];
 
   const environmentAlerts = [
-    { title: "UV विकिरण", value: data.uv, icon: <Sun className="w-7 h-7 text-yellow-400" />, unit: " mW/cm²" },
-    { title: "वर्षा सूचना", value: data.rain, icon: <CloudRain className="w-7 h-7 text-sky-400" />, unit: "" },
-    { title: "पशु चराई सूचना", value: data.grazing, icon: <AlertTriangle className="w-7 h-7 text-red-400" />, unit: "" },
-    { title: "तेज़ हवा / आंधी अलर्ट", value: data.storm, icon: <Wind className="w-7 h-7 text-indigo-400" />, unit: "" },
+    { title: "UV विकिरण", value: unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" />, unit: "" },
+    { title: "वर्षा सूचना", value: unavailableText, icon: <CloudRain className="w-7 h-7 text-sky-400" />, unit: "" },
+    { title: "पशु चराई सूचना", value: unavailableText, icon: <AlertTriangle className="w-7 h-7 text-red-400" />, unit: "" },
+    { title: "तेज़ हवा / आंधी अलर्ट", value: unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" />, unit: "" },
   ];
 
   const glowStyle = {
@@ -114,9 +84,8 @@ function Diagnose() {
               >
                 <div className="mb-3">{sensor.icon}</div>
                 <h2 className="text-lg font-semibold">{sensor.title}</h2>
-                <p className="text-2xl font-bold text-emerald-200">
+                <p className="text-xl font-bold text-red-400">
                   {sensor.value}
-                  <span className="text-gray-400 text-lg">{sensor.unit}</span>
                 </p>
               </motion.div>
             ))}
@@ -146,9 +115,8 @@ function Diagnose() {
               >
                 <div className="mb-3">{alert.icon}</div>
                 <h2 className="text-lg font-semibold">{alert.title}</h2>
-                <p className="text-xl font-bold text-emerald-200">
+                <p className="text-xl font-bold text-red-400">
                   {alert.value}
-                  <span className="text-gray-400 text-lg">{alert.unit}</span>
                 </p>
               </motion.div>
             ))}
