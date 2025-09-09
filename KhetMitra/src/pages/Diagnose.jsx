@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import {
@@ -15,28 +15,51 @@ import {
 
 function Diagnose() {
   const [hoveredAlert, setHoveredAlert] = useState(null);
+  const [moisture, setMoisture] = useState(null);
 
   const unavailableText = "Device Unavailable";
 
+  // ✅ Fetch moisture from backend
+  useEffect(() => {
+    const fetchMoisture = async () => {
+      try {
+        const res = await fetch("http://localhost:2713/sensor/moisture");
+        const data = await res.json();
+        setMoisture(data.moisture);
+      } catch (err) {
+        console.error("Error fetching moisture:", err);
+        setMoisture(null);
+      }
+    };
+
+    fetchMoisture();
+    const interval = setInterval(fetchMoisture, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const cropSensors = [
-    { title: "pH स्तर", value: unavailableText, icon: <FlaskConical className="w-7 h-7 text-emerald-300" />, unit: "" },
-    { title: "विद्युत चालकता", value: unavailableText, icon: <Activity className="w-7 h-7 text-teal-300" />, unit: "" },
-    { title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)", value: unavailableText, icon: <Leaf className="w-7 h-7 text-green-300" />, unit: "" },
-    { title: "तापमान", value: unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" />, unit: "" },
-    { title: "नमी", value: unavailableText, icon: <Droplets className="w-7 h-7 text-cyan-300" />, unit: "" },
+    { title: "pH स्तर", value: unavailableText, icon: <FlaskConical className="w-7 h-7 text-emerald-300" /> },
+    { title: "विद्युत चालकता", value: unavailableText, icon: <Activity className="w-7 h-7 text-teal-300" /> },
+    { title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)", value: unavailableText, icon: <Leaf className="w-7 h-7 text-green-300" /> },
+    { title: "तापमान", value: unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" /> },
+    { 
+      title: "नमी", 
+      value: moisture !== null ? `${moisture}%` : unavailableText, 
+      icon: <Droplets className="w-7 h-7 text-cyan-300" /> 
+    },
   ];
 
   const environmentAlerts = [
-    { title: "UV विकिरण", value: unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" />, unit: "" },
-    { title: "वर्षा सूचना", value: unavailableText, icon: <CloudRain className="w-7 h-7 text-sky-400" />, unit: "" },
-    { title: "पशु चराई सूचना", value: unavailableText, icon: <AlertTriangle className="w-7 h-7 text-red-400" />, unit: "" },
-    { title: "तेज़ हवा / आंधी अलर्ट", value: unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" />, unit: "" },
+    { title: "UV विकिरण", value: unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" /> },
+    { title: "वर्षा सूचना", value: unavailableText, icon: <CloudRain className="w-7 h-7 text-sky-400" /> },
+    { title: "पशु चराई सूचना", value: unavailableText, icon: <AlertTriangle className="w-7 h-7 text-red-400" /> },
+    { title: "तेज़ हवा / आंधी अलर्ट", value: unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" /> },
   ];
 
   const glowStyle = {
     boxShadow: "0 0 20px rgba(72,187,120,0.2)",
     border: "1px solid rgba(233,252,239,0.2)",
-    background: "rgba(20, 30, 40, 0.6)", // frosted dark glass
+    background: "rgba(20, 30, 40, 0.6)",
   };
 
   return (
@@ -46,19 +69,7 @@ function Diagnose() {
       </div>
 
       <div className="pt-[64px] relative z-10">
-        {/* Animated radial glows */}
-        <motion.div
-          className="absolute inset-0"
-          animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 30%, rgba(233,252,239,0.12), transparent 70%), radial-gradient(circle at 80% 70%, rgba(56,189,248,0.12), transparent 70%)",
-            backgroundSize: "200% 200%",
-          }}
-        />
-
-        {/* Page Title */}
+        {/* Title */}
         <div className="relative z-10 p-8 text-center">
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-sky-400 drop-shadow-lg">
             🌾 खेत का लाइव निदान
@@ -80,11 +91,10 @@ function Diagnose() {
                 className="backdrop-blur-xl rounded-2xl p-6 flex flex-col items-center justify-center"
                 style={glowStyle}
                 whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <div className="mb-3">{sensor.icon}</div>
                 <h2 className="text-lg font-semibold">{sensor.title}</h2>
-                <p className="text-xl font-bold text-red-400">
+                <p className={`text-xl font-bold ${sensor.value === unavailableText ? "text-red-400" : "text-emerald-300"}`}>
                   {sensor.value}
                 </p>
               </motion.div>
@@ -101,23 +111,11 @@ function Diagnose() {
                 key={index}
                 className="backdrop-blur-xl rounded-2xl p-6 flex flex-col items-center justify-center"
                 style={glowStyle}
-                onMouseEnter={() => setHoveredAlert(index)}
-                onMouseLeave={() => setHoveredAlert(null)}
-                animate={{
-                  scale:
-                    hoveredAlert === null
-                      ? 1
-                      : hoveredAlert === index
-                      ? 1.05
-                      : 0.95,
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                whileHover={{ scale: 1.05 }}
               >
                 <div className="mb-3">{alert.icon}</div>
                 <h2 className="text-lg font-semibold">{alert.title}</h2>
-                <p className="text-xl font-bold text-red-400">
-                  {alert.value}
-                </p>
+                <p className="text-xl font-bold text-red-400">{alert.value}</p>
               </motion.div>
             ))}
           </div>
