@@ -39,11 +39,12 @@ function Diagnose() {
 
   const cropSensors = [
     { title: "pH स्तर", value: unavailableText, icon: <FlaskConical className="w-7 h-7 text-emerald-300" /> },
+    { title: "नमी 💧", value: unavailableText, icon: <Droplets className="w-7 h-7 text-emerald-300" /> },
     { title: "विद्युत चालकता", value: unavailableText, icon: <Activity className="w-7 h-7 text-teal-300" /> },
     { title: "NPK (नाइट्रोजन, फॉस्फोरस, पोटाश)", value: unavailableText, icon: <Leaf className="w-7 h-7 text-green-300" /> },
     { title: "तापमान", value: unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" /> },
     { 
-      title: "नमी", 
+      title: "नमी उप उपकरण", 
       value: moisture !== null ? `${moisture}%` : unavailableText, 
       icon: <Droplets className="w-7 h-7 text-cyan-300" /> 
     },
