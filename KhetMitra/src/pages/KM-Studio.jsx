@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 const videos = [
   {
@@ -34,6 +35,7 @@ export default function KMStudio() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-green-100 via-emerald-200 to-green-300 p-8 overflow-hidden">
+      <Navbar/>
       {/* Floating Farming Icons */}
       <motion.span
         className="absolute text-6xl left-10 top-20 opacity-20"
