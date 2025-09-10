@@ -92,6 +92,7 @@ export default function Navbar() {
                 <Link to="/myProfile" className="px-4 py-2 hover:bg-[#4ADE80]/20 border-t border-gray-700">My Profile</Link>
                 {user?.isAdmin ? (
                   <Link to="/allHelp" className="px-4 py-2 hover:bg-[#4ADE80]/20">All Help</Link>
+                  
                 ) : (
                   <Link to="/my-requests" className="px-4 py-2 hover:bg-[#4ADE80]/20">My Requests</Link>
                 )}
