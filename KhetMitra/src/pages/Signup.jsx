@@ -75,7 +75,7 @@ export default function Signup() {
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Error connecting to fingerprint sensor");
+      setMessage("❌ Error: Unable to fetch data from Aadhaar servers. Please try again later.");
     } finally {
       setBioLoading(false);
     }
