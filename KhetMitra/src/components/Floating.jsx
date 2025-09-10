@@ -79,7 +79,7 @@ function Floating() {
         {/* Feedback Button */}
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 rounded-xl bg-red-600 flex items-center justify-center shadow-lg hover:bg-red-700 transition"
+          className="w-14 h-14 rounded-xl bg-green-600 flex items-center justify-center shadow-lg hover:bg-green-800 transition"
         >
           <ThumbsUp className="text-white w-6 h-6" />
         </button>
