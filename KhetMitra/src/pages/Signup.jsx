@@ -47,7 +47,7 @@ export default function Signup() {
       const res = await axios.post(`${BASE_URL}/signup`, form, { withCredentials: true });
       setMessage(res.data?.message || "✅ Account created");
       // Navigate after short delay to show success message
-      setTimeout(() => navigate("/login"), 1500);
+      setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       // Show backend message (e.g., phone/email duplicate)
       const msg = err.response?.data?.message || "❌ Signup failed";
