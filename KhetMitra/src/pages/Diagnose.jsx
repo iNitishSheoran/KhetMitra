@@ -51,7 +51,7 @@ function Diagnose() {
   ];
 
   const environmentAlerts = [
-    { title: "UV विकिरण", value: unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" /> },
+    { title: "प्रकाश तीव्रता 🌟", value: unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" /> },
     { title: "वर्षा सूचना", value: unavailableText, icon: <CloudRain className="w-7 h-7 text-sky-400" /> },
     { title: "पशु चराई सूचना", value: unavailableText, icon: <AlertTriangle className="w-7 h-7 text-red-400" /> },
     { title: "तेज़ हवा / आंधी अलर्ट", value: unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" /> },
@@ -82,9 +82,14 @@ function Diagnose() {
 
         {/* Crop Sensors */}
         <div className="relative z-10 px-6">
-          <h2 className="text-2xl font-bold text-emerald-300 mb-4">
-            🌱 फसल स्वास्थ्य सेंसर
-          </h2>
+       <h2 className="text-2xl font-bold text-emerald-300 mb-4">
+  🌱 फसल स्वास्थ्य सेंसर 
+  <span className="text-sm text-gray-400 font-normal">
+    * (डिवाइस/हार्डवेयर के बिना कार्य नहीं करेगा, कृपया कनेक्ट करें)
+  </span>
+</h2>
+
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cropSensors.map((sensor, index) => (
               <motion.div
@@ -105,7 +110,11 @@ function Diagnose() {
 
         {/* Environment Alerts */}
         <div className="relative z-10 px-6 mt-10 mb-10">
-          <h2 className="text-2xl font-bold text-emerald-300 mb-4">⚡ पर्यावरण अलर्ट</h2>
+          <h2 className="text-2xl font-bold text-emerald-300 mb-4">⚡ पर्यावरण अलर्ट
+            <span className="text-sm text-gray-400 font-normal">
+    * (डिवाइस/हार्डवेयर के बिना कार्य नहीं करेगा, कृपया कनेक्ट करें)
+  </span>
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             {environmentAlerts.map((alert, index) => (
               <motion.div

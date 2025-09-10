@@ -58,7 +58,7 @@ export default function Navbar() {
         <Link to="/about" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">About Us</Link>
         <Link to="/help" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Help</Link>
         <Link to="/daam" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Daam</Link>
-        <Link to="/kmstudio" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">KM-Studio</Link>
+        <Link to="/kmstudio" className="hover:text-[#FACC15] hover:scale-110 text-cyan-200 transition-all duration-300">KM-Studio</Link>
       </div>
 
       {/* Profile */}
