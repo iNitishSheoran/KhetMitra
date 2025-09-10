@@ -23,9 +23,7 @@ export default function CropPage() {
   useEffect(() => {
     const fetchCrops = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/crop/all`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${BASE_URL}/crop/all`);
         setCrops(res.data.crops);
       } catch (err) {
         console.error(err);
@@ -43,8 +41,7 @@ export default function CropPage() {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${BASE_URL}/crop/details/${encodeURIComponent(selectedCrop)}`,
-          { withCredentials: true }
+          `${BASE_URL}/crop/details/${encodeURIComponent(selectedCrop)}`
         );
         setTimeout(() => {
           setCropDetails(res.data.crop);
