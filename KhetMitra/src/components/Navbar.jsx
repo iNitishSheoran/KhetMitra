@@ -3,22 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/logo.png";
 import { BASE_URL } from "../config";
-import { useUser } from "../context/UserContext.jsx";
-import { Menu, X } from "lucide-react";
+import { useUser } from "../context/UserContext.jsx"; // ⬅️ updated
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [mobileMenu, setMobileMenu] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { isAuthenticated, user, refreshUser } = useUser();
+  const { isAuthenticated, user, refreshUser } = useUser(); // ⬅️ updated
   const navigate = useNavigate();
 
   // Logout function
   const handleLogout = async () => {
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-      refreshUser();
+      refreshUser(); // clear user data
       navigate("/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -37,7 +35,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-gradient-to-r from-[#0D1F1B] via-[#1B4332] to-[#081C15] text-white flex fixed top-0 left-0 items-center justify-between px-6 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.6)] w-full z-[100] border-b border-[#4ADE80]/40">
+    <nav className="bg-gradient-to-r from-[#0D1F1B] via-[#1B4332] to-[#081C15] text-white flex fixed top-0 left-0 items-center justify-between pl-4 pr-6 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.6)] w-full z-[50] border-b border-[#4ADE80]/40">
       
       {/* Logo */}
       <Link to="/">
@@ -45,7 +43,7 @@ export default function Navbar() {
           <img
             src={logo}
             alt="Logo"
-            className="w-12 h-12 rounded-full shadow-md object-cover"
+            className="w-14 h-14 ml-5 rounded-full shadow-md object-cover"
           />
           <span className="text-white hover:text-[#FFD95A] transition-colors">
             KhetMitra
@@ -53,84 +51,60 @@ export default function Navbar() {
         </div>
       </Link>
 
-      {/* Desktop Nav Links */}
+      {/* Nav Links */}
       <div className="hidden md:flex space-x-8 text-lg font-medium">
         <Link to="/diagnose" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Diagnose</Link>
         <Link to="/cropData" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Crop Data</Link>
         <Link to="/about" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">About Us</Link>
         <Link to="/help" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Help</Link>
         <Link to="/daam" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Daam</Link>
-        <Link to="/kmstudio" className="hover:text-[#FACC15] hover:scale-110 text-cyan-200 transition-all duration-300">🎬 KM-Studio</Link>
       </div>
 
-      {/* Mobile Menu Button */}
-      <button
-        className="md:hidden flex items-center"
-        onClick={() => setMobileMenu(!mobileMenu)}
-      >
-        {mobileMenu ? <X size={28} /> : <Menu size={28} />}
-      </button>
-
       {/* Profile */}
-      <div className="relative hidden md:block pr-2" ref={dropdownRef}>
+      <div className="relative pr-2" ref={dropdownRef}>
         <img
           src={user?.photoUrl || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
-          onClick={() => setShowDropdown((prev) => !prev)}
+          onClick={() => setShowDropdown(prev => !prev)}
           className="h-11 w-11 rounded-full object-cover cursor-pointer border-2 border-[#FFD95A] hover:shadow-[0_0_12px_#FFD95A] transition"
           alt="profile"
         />
 
         {showDropdown && (
           <div className="absolute top-[120%] right-0 mt-2 w-52 bg-[#1B1B1B] text-white rounded-lg shadow-lg flex flex-col border border-[#4ADE80] z-[9999]">
-            <Link to="/myProfile" className="px-4 py-2 hover:bg-[#4ADE80]/20 border-b border-gray-700">My Profile</Link>
-            {user?.isAdmin ? (
-              <Link to="/allHelp" className="px-4 py-2 hover:bg-[#4ADE80]/20">All Help</Link>
-            ) : (
-              <Link to="/my-requests" className="px-4 py-2 hover:bg-[#4ADE80]/20">My Requests</Link>
+            
+            {/* Mobile Nav Links */}
+            <div className="md:hidden flex flex-col">
+              <Link to="/" className="px-4 py-2 hover:bg-[#4ADE80]/20">Home</Link>
+              <Link to="/diagnose" className="px-4 py-2 hover:bg-[#4ADE80]/20">Diagnose</Link>
+              <Link to="/cropData" className="px-4 py-2 hover:bg-[#4ADE80]/20">Crop Data</Link>
+              <Link to="/about" className="px-4 py-2 hover:bg-[#4ADE80]/20">About Us</Link>
+              <Link to="/help" className="px-4 py-2 hover:bg-[#4ADE80]/20">Help</Link>
+              <Link to="/daam" className="px-4 py-2 hover:bg-[#4ADE80]/20">Daam</Link>
+            </div>
+
+            {!isAuthenticated && (
+              <Link to="/signup" className="px-4 py-2 hover:bg-[#4ADE80]/20">Sign up</Link>
             )}
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-left text-red-300 hover:bg-red-600/20 border-t border-gray-700"
-            >
-              Logout
-            </button>
+
+            {user && (
+              <>
+                <Link to="/myProfile" className="px-4 py-2 hover:bg-[#4ADE80]/20 border-t border-gray-700">My Profile</Link>
+                {user?.isAdmin ? (
+                  <Link to="/allHelp" className="px-4 py-2 hover:bg-[#4ADE80]/20">All Help</Link>
+                ) : (
+                  <Link to="/my-requests" className="px-4 py-2 hover:bg-[#4ADE80]/20">My Requests</Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-left text-red-300 hover:bg-red-600/20 border-t border-gray-700"
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
-
-      {/* Mobile Menu */}
-      {mobileMenu && (
-        <div className="absolute top-[100%] left-0 w-full bg-[#0D1F1B] md:hidden flex flex-col text-lg font-medium border-t border-[#4ADE80]/40 z-[99]">
-          <Link to="/" className="px-6 py-3 hover:bg-[#4ADE80]/20">Home</Link>
-          <Link to="/diagnose" className="px-6 py-3 hover:bg-[#4ADE80]/20">Diagnose</Link>
-          <Link to="/cropData" className="px-6 py-3 hover:bg-[#4ADE80]/20">Crop Data</Link>
-          <Link to="/about" className="px-6 py-3 hover:bg-[#4ADE80]/20">About Us</Link>
-          <Link to="/help" className="px-6 py-3 hover:bg-[#4ADE80]/20">Help</Link>
-          <Link to="/daam" className="px-6 py-3 hover:bg-[#4ADE80]/20">Daam</Link>
-          <Link to="/kmstudio" className="px-6 py-3 hover:bg-[#FACC15]/20 text-cyan-200">🎬 KM-Studio</Link>
-
-          {!isAuthenticated && (
-            <Link to="/signup" className="px-6 py-3 hover:bg-[#4ADE80]/20">Sign up</Link>
-          )}
-
-          {user && (
-            <>
-              <Link to="/myProfile" className="px-6 py-3 hover:bg-[#4ADE80]/20">My Profile</Link>
-              {user?.isAdmin ? (
-                <Link to="/allHelp" className="px-6 py-3 hover:bg-[#4ADE80]/20">All Help</Link>
-              ) : (
-                <Link to="/my-requests" className="px-6 py-3 hover:bg-[#4ADE80]/20">My Requests</Link>
-              )}
-              <button
-                onClick={handleLogout}
-                className="px-6 py-3 text-left text-red-300 hover:bg-red-600/20 border-t border-gray-700"
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </div>
-      )}
     </nav>
   );
 }
