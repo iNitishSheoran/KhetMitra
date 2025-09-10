@@ -12,6 +12,7 @@ import Diagnose from './pages/Diagnose';
 import UserProfile from './pages/UserProfile';
 import EditProfile from "./pages/EditProfile";
 import Daam from "./pages/Daam";
+import KMStudio from './pages/KM-Studio';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/myProfile" element={<UserProfile/>} />
         <Route path="/editProfile" element={<EditProfile/>} />
         <Route path="/daam" element={<Daam/>} />
+        <Route path="/kmstudio" element={<KMStudio/>} />
       </Routes>
     </div>
   );
