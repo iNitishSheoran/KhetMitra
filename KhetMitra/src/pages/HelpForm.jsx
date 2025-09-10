@@ -47,12 +47,17 @@ export default function HelpForm() {
       // Clear message after 3s
       setTimeout(() => setMessage(""), 3000);
     } catch (err) {
-      console.log(err); // for debugging
-      setMessage(err.response?.data?.error || "❌ Failed to submit request");
-      setTimeout(() => setMessage(""), 3000);
-    }
+  console.log(err); // for debugging
 
-    setLoading(false);
+  if (err.response?.status === 401) {
+    setMessage("Please Login to send Help Requests");
+  } else {
+    setMessage(err.response?.data?.error || "❌ Failed to submit request");
+  }
+
+  setTimeout(() => setMessage(""), 3000);
+  setLoading(false);
+}
   };
 
   return (
