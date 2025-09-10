@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
+import DaamImage from "../assets/Daam.png";
 
 const API_KEY = "579b464db66ec23bdd000001cce051d55c5546f641caf1d798e209b3";
 const BASE_URL =
@@ -18,24 +19,17 @@ export default function MandiPriceApp() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     fetch(`${BASE_URL}?api-key=${API_KEY}&format=json&limit=5000`)
       .then((res) => res.json())
       .then((res) => {
         const uniqueStates = [...new Set(res.records.map((item) => item.state))].sort();
         setStates(uniqueStates);
-        setLoading(false);
       })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load states. Please try again.");
-        setLoading(false);
-      });
+      .catch(() => setError("Failed to load states"));
   }, []);
 
   useEffect(() => {
     if (selectedState) {
-      setLoading(true);
       fetch(
         `${BASE_URL}?api-key=${API_KEY}&format=json&limit=5000&filters[state]=${encodeURIComponent(
           selectedState
@@ -47,13 +41,6 @@ export default function MandiPriceApp() {
           setDistricts(uniqueDistricts);
           setSelectedDistrict("");
           setCommodities([]);
-          setSelectedCommodity("");
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setError("Failed to load districts. Please try again.");
-          setLoading(false);
         });
     } else {
       setDistricts([]);
@@ -63,7 +50,6 @@ export default function MandiPriceApp() {
 
   useEffect(() => {
     if (selectedState && selectedDistrict) {
-      setLoading(true);
       fetch(
         `${BASE_URL}?api-key=${API_KEY}&format=json&limit=5000&filters[state]=${encodeURIComponent(
           selectedState
@@ -74,12 +60,6 @@ export default function MandiPriceApp() {
           const uniqueCommodities = [...new Set(res.records.map((item) => item.commodity))].sort();
           setCommodities(uniqueCommodities);
           setSelectedCommodity("");
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setError("Failed to load commodities. Please try again.");
-          setLoading(false);
         });
     } else {
       setCommodities([]);
@@ -89,9 +69,9 @@ export default function MandiPriceApp() {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    setError("");
     if (selectedState && selectedDistrict && selectedCommodity) {
       setLoading(true);
-      setError("");
       fetch(
         `${BASE_URL}?api-key=${API_KEY}&format=json&limit=5000&filters[state]=${encodeURIComponent(
           selectedState
@@ -102,160 +82,159 @@ export default function MandiPriceApp() {
         .then((res) => res.json())
         .then((res) => {
           setData(res.records || []);
-          if (!res.records || res.records.length === 0) {
-            setError("No data available for the selected combination.");
+          if (!res.records?.length) {
+            setError("❌ Is combination ke liye koi daam available nahi hai.");
           }
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setError("Failed to fetch data. Please try again.");
           setLoading(false);
         });
     } else {
-      setError("Please select State, District, and Commodity first!");
+      setError("⚠️ Kripya State, District aur Commodity select karein!");
     }
   };
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0f0a] via-[#112011] to-[#0b120b] text-white font-sans pt-[110px] p-6">
-        <div className="max-w-6xl mx-auto bg-gradient-to-br from-[#142614] via-[#1e331e] to-[#173017] shadow-2xl rounded-3xl p-8 border border-green-500/30">
-          <h1 className="text-4xl font-extrabold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-400 to-green-300 drop-shadow-lg">
-            🌾 India Mandi Price Finder
-          </h1>
 
-          {error && submitted && (
-            <div className="bg-red-900/50 text-red-300 p-4 rounded-lg mb-6 text-center font-semibold shadow-md">
-              ⚠️ {error}
-            </div>
-          )}
+      {/* Hero Section */}
+      <div className="relative flex justify-center items-center min-h-screen bg-gradient-to-br from-[#f1f9f1] via-[#dff5e1] to-[#c8ebc5]">
+        {/* Illustration */}
+        <img
+          src={DaamImage}
+          alt="Daam Farmer UI"
+          className="w-[850px] max-w-full drop-shadow-2xl"
+        />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {/* State */}
-            <div>
-              <label className="block mb-2 font-semibold text-green-300">
-                Select State
-              </label>
-              <select
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-                className="w-full p-3 border border-green-500/50 rounded-xl bg-[#102210] text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition hover:border-emerald-400"
-              >
-                <option value="">-- Select State --</option>
-                {states.map((st, idx) => (
-                  <option key={idx} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </select>
-            </div>
+        {/* Overlay Card */}
+        <div className="absolute top-[18%] right-[6%] w-[360px] bg-gradient-to-br from-white/95 to-green-50/90 backdrop-blur-lg p-6 rounded-3xl shadow-2xl border border-green-300">
+          <h3 className="text-2xl font-extrabold text-green-800 mb-5 text-center drop-shadow-sm">
+            🌾 Apna Mandi Daam Dekho
+          </h3>
 
-            {/* District */}
-            <div>
-              <label className="block mb-2 font-semibold text-green-300">
-                Select District
-              </label>
-              <select
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                disabled={!selectedState}
-                className="w-full p-3 border border-green-500/50 rounded-xl bg-[#102210] text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition hover:border-emerald-400 disabled:bg-[#0b100b] disabled:text-gray-400"
-              >
-                <option value="">-- Select District --</option>
-                {districts.map((dist, idx) => (
-                  <option key={idx} value={dist}>
-                    {dist}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* State */}
+          <label className="block text-sm font-semibold text-green-900 mb-1">
+            🗺️ State
+          </label>
+          <select
+            value={selectedState}
+            onChange={(e) => setSelectedState(e.target.value)}
+            className="w-full p-3 mb-4 border border-green-400 rounded-lg bg-white shadow-inner focus:ring-2 focus:ring-green-600"
+          >
+            <option value="">-- State Chune --</option>
+            {states.map((st, idx) => (
+              <option key={idx} value={st}>
+                {st}
+              </option>
+            ))}
+          </select>
 
-            {/* Commodity */}
-            <div>
-              <label className="block mb-2 font-semibold text-green-300">
-                Select Commodity
-              </label>
-              <select
-                value={selectedCommodity}
-                onChange={(e) => setSelectedCommodity(e.target.value)}
-                disabled={!selectedDistrict}
-                className="w-full p-3 border border-green-500/50 rounded-xl bg-[#102210] text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition hover:border-emerald-400 disabled:bg-[#0b100b] disabled:text-gray-400"
-              >
-                <option value="">-- Select Commodity --</option>
-                {commodities.map((com, idx) => (
-                  <option key={idx} value={com}>
-                    {com}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          {/* District */}
+          <label className="block text-sm font-semibold text-green-900 mb-1">
+            🏡 District
+          </label>
+          <select
+            value={selectedDistrict}
+            onChange={(e) => setSelectedDistrict(e.target.value)}
+            disabled={!selectedState}
+            className="w-full p-3 mb-4 border border-green-400 rounded-lg bg-white shadow-inner focus:ring-2 focus:ring-green-600 disabled:opacity-50"
+          >
+            <option value="">-- District Chune --</option>
+            {districts.map((dist, idx) => (
+              <option key={idx} value={dist}>
+                {dist}
+              </option>
+            ))}
+          </select>
 
-          <div className="text-center mb-6">
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="bg-gradient-to-r from-emerald-400 via-teal-400 to-green-300 text-[#0a0f0a] px-6 py-3 rounded-2xl font-semibold shadow-lg hover:scale-105 transition disabled:opacity-60"
-            >
-              {loading ? "Loading..." : "Show Prices"}
-            </button>
-          </div>
+          {/* Commodity */}
+          <label className="block text-sm font-semibold text-green-900 mb-1">
+            🥦 Commodity
+          </label>
+          <select
+            value={selectedCommodity}
+            onChange={(e) => setSelectedCommodity(e.target.value)}
+            disabled={!selectedDistrict}
+            className="w-full p-3 mb-4 border border-green-400 rounded-lg bg-white shadow-inner focus:ring-2 focus:ring-green-600 disabled:opacity-50"
+          >
+            <option value="">-- Commodity Chune --</option>
+            {commodities.map((com, idx) => (
+              <option key={idx} value={com}>
+                {com}
+              </option>
+            ))}
+          </select>
 
-          {/* Results Table */}
-          {data.length > 0 && (
-            <div className="mt-6">
-              <h2 className="text-2xl font-bold mb-4 text-green-300">Results:</h2>
-              <table className="min-w-full bg-[#102210] border border-green-600/40 rounded-2xl shadow-md">
-                <thead className="bg-[#1a301a] text-green-200">
-                  <tr>
-                    {[
-                      "Market",
-                      "Commodity",
-                      "Variety",
-                      "Min Price",
-                      "Max Price",
-                      "Modal Price",
-                      "Date",
-                    ].map((head, idx) => (
-                      <th
-                        key={idx}
-                        className="border px-4 py-2 text-left font-semibold"
-                      >
-                        {head}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((item, i) => (
-                    <tr
-                      key={i}
-                      className="hover:bg-[#234023] transition cursor-pointer"
-                    >
-                      <td className="border px-4 py-2">{item.market}</td>
-                      <td className="border px-4 py-2">{item.commodity}</td>
-                      <td className="border px-4 py-2">{item.variety}</td>
-                      <td className="border px-4 py-2">{item.min_price}</td>
-                      <td className="border px-4 py-2">{item.max_price}</td>
-                      <td className="border px-4 py-2">{item.modal_price}</td>
-                      <td className="border px-4 py-2">{item.arrival_date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          {/* Button */}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full py-3 mt-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition"
+          >
+            {loading ? "⏳ Loading..." : "📊 Daam Dikhao"}
+          </button>
 
-          {/* No data message */}
-          {submitted && data.length === 0 && !error && !loading && (
-            <p className="mt-6 text-green-300 font-semibold text-center">
-              ⚠️ No data available for the selected combination.
+          {error && (
+            <p className="mt-3 text-sm text-red-700 font-semibold text-center">
+              {error}
             </p>
           )}
         </div>
       </div>
+
+      {/* Results Section */}
+      {data.length > 0 && (
+        <div className="max-w-6xl mx-auto mt-12 p-8 bg-gradient-to-br from-[#fefefe] to-[#f3fdf5] rounded-3xl shadow-2xl border border-green-200">
+          <h2 className="text-3xl font-bold mb-6 text-green-800 flex items-center gap-2">
+            📊 Mandi Daam
+          </h2>
+          <div className="overflow-x-auto rounded-lg border border-green-300 shadow-inner">
+            <table className="min-w-full bg-white">
+              <thead className="bg-green-700 text-white sticky top-0 z-10">
+                <tr>
+                  {[
+                    "Mandi",
+                    "Commodity",
+                    "Variety",
+                    "Min Price (₹)",
+                    "Max Price (₹)",
+                    "Modal Price (₹)",
+                    "Date",
+                  ].map((head, idx) => (
+                    <th
+                      key={idx}
+                      className="px-4 py-3 text-left font-semibold text-sm"
+                    >
+                      {head}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-green-100">
+                {data.map((item, i) => (
+                  <tr
+                    key={i}
+                    className="hover:bg-green-50 transition cursor-pointer"
+                  >
+                    <td className="px-4 py-2">{item.market}</td>
+                    <td className="px-4 py-2">{item.commodity}</td>
+                    <td className="px-4 py-2">{item.variety}</td>
+                    <td className="px-4 py-2 text-green-800 font-medium">
+                      ₹{item.min_price}
+                    </td>
+                    <td className="px-4 py-2 text-green-800 font-medium">
+                      ₹{item.max_price}
+                    </td>
+                    <td className="px-4 py-2 text-green-900 font-bold">
+                      ₹{item.modal_price}
+                    </td>
+                    <td className="px-4 py-2">{item.arrival_date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </>
   );
 }
