@@ -9,6 +9,7 @@ import {
   Leaf,
   Sun,
   CloudRain,
+  Gauge,
   Wind,
   AlertTriangle,
 } from "lucide-react";
@@ -53,6 +54,7 @@ function Diagnose() {
   const environmentAlerts = [
     { title: "प्रकाश तीव्रता 🌟", value: unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" /> },
     { title: "वर्षा सूचना", value: unavailableText, icon: <CloudRain className="w-7 h-7 text-sky-400" /> },
+    { title: "स्थानीय तापमान, ऊंचाई, दबाव ", value: unavailableText, icon: <Gauge className="w-7 h-7 text-sky-400" /> },
     { title: "पशु चराई सूचना", value: unavailableText, icon: <AlertTriangle className="w-7 h-7 text-red-400" /> },
     { title: "तेज़ हवा / आंधी अलर्ट", value: unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" /> },
   ];
