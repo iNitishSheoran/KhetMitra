@@ -28,11 +28,11 @@ function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-3 text-yellow-300">खोजें</h3>
           <ul className="space-y-2 text-sm">
-            <li><a href="#diagnose" className="hover:text-white">रोग पहचान</a></li>
-            <li><a href="#cropdata" className="hover:text-white">फसल डेटा</a></li>
-            <li><a href="#about" className="hover:text-white">हमारे बारे में</a></li>
-            <li><a href="#help" className="hover:text-white">मदद</a></li>
-            <li><a href="#enam" className="hover:text-white">ई-नाम (eNAM)</a></li>
+            <li><a href="/diagnose" className="hover:text-white">रोग पहचान</a></li>
+            <li><a href="/cropData" className="hover:text-white">फसल डेटा</a></li>
+            <li><a href="/about" className="hover:text-white">हमारे बारे में</a></li>
+            <li><a href="/help" className="hover:text-white">मदद</a></li>
+            <li><a href="/daam" className="hover:text-white">दाम (daam)</a></li>
           </ul>
         </div>
 
@@ -41,9 +41,9 @@ function Footer() {
           <h3 className="text-lg font-semibold mb-3 text-yellow-300">साधन</h3>
           <ul className="space-y-2 text-sm">
             <li><a href="#blogs" className="hover:text-white">खेती ब्लॉग</a></li>
-            <li><a href="#guides" className="hover:text-white">मार्गदर्शन</a></li>
-            <li><a href="#support" className="hover:text-white">किसान सहायता</a></li>
-            <li><a href="#policy" className="hover:text-white">गोपनीयता नीति</a></li>
+            <li><a href="/cropData" className="hover:text-white">मार्गदर्शन</a></li>
+            <li><a href="/help" className="hover:text-white">किसान सहायता</a></li>
+            <li><a href="/cropData" className="hover:text-white">गोपनीयता नीति</a></li>
           </ul>
         </div>
 
