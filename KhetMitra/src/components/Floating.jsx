@@ -9,7 +9,9 @@ function Floating() {
   const [rating, setRating] = useState(0);
 
   const handleSubmit = () => {
-    alert(`🙏 धन्यवाद ${name || "Farmer"}!\nFeedback: ${feedback}\nRating: ${rating}⭐`);
+    alert(
+      `🙏 धन्यवाद ${name || "Farmer"}!\nFeedback: ${feedback}\nRating: ${rating}⭐`
+    );
     setName("");
     setFeedback("");
     setRating(0);
@@ -29,12 +31,18 @@ function Floating() {
     <>
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-4 z-50">
-        {/* AI Icon with Glowing Square Rings */}
+        {/* AI Icon with Glowing Square Rings (Clickable) */}
         <motion.div
-          className="relative flex flex-col items-center justify-center"
+          className="relative flex flex-col items-center justify-center cursor-pointer z-40"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
+          onClick={() =>
+            window.open(
+              "https://huggingface.co/spaces/sangal-aarushi/KhetMitraAI",
+              "_blank"
+            )
+          }
         >
           {/* Expanding Purple Square Rings */}
           <span className="absolute w-20 h-20 rounded-2xl border-4 border-purple-500 opacity-40 animate-ping" />
@@ -60,10 +68,10 @@ function Floating() {
           </p>
         </motion.div>
 
-        {/* Call Button */}
+        {/* Call Button (Higher z-index) */}
         <button
           onClick={handleCall}
-          className="w-14 h-14 rounded-xl bg-yellow-500 flex items-center justify-center shadow-lg hover:bg-yellow-600 transition"
+          className="relative z-50 w-14 h-14 rounded-xl bg-yellow-500 flex items-center justify-center shadow-lg hover:bg-yellow-600 transition"
         >
           <Phone className="text-white w-6 h-6" />
         </button>
@@ -125,7 +133,9 @@ function Floating() {
                     key={star}
                     onClick={() => setRating(star)}
                     className={`w-7 h-7 cursor-pointer ${
-                      rating >= star ? "fill-green-600 text-green-600" : "text-gray-400"
+                      rating >= star
+                        ? "fill-green-600 text-green-600"
+                        : "text-gray-400"
                     }`}
                   />
                 ))}
