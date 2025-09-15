@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import DaamImage from "../assets/Daam.png";
-import BazaarImage from "../assets/bazaar.png";
+import BazaarImage from "../assets/Bazaar.png";
 
 const API_KEY = "579b464db66ec23bdd000001cce051d55c5546f641caf1d798e209b3";
 const BASE_URL =
