@@ -24,7 +24,7 @@ export default function MandiPriceApp() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1000);
+    const timer = setTimeout(() => setShowSplash(false), 1200);
     return () => clearTimeout(timer);
   }, []);
 
