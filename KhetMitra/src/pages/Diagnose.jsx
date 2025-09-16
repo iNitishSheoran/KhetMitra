@@ -14,14 +14,32 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-// ✅ Import sound from assets
+// ✅ Import sound
 import notificationSound from "../assets/notification.mp3";
 
 function Diagnose() {
   const [sensorData, setSensorData] = useState({});
   const unavailableText = "डिवाइस उपलब्ध नहीं है (Device Unavailable)";
 
-  // ✅ Ask notification permission once
+  // ✅ Empty default values
+  const emptyData = {
+    soilTemp: 0,
+    soilMoist: 0,
+    soilPH: 0,
+    nitrogen: 0,
+    phosphorus: 0,
+    potassium: 0,
+    ds18b20Temp: 0,
+    bmpTemp: 0,
+    pressure: 0,
+    altitude: 0,
+    rain: 0,
+    ldr: 0,
+    voltage: 0,
+    button: 0,
+  };
+
+  // ✅ Ask notification permission
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
@@ -36,50 +54,65 @@ function Diagnose() {
 
   // ✅ Show notification
   const showNotification = (title, body) => {
-    if ("Notification" in window && Notification.permission === "granted") {
+    if (!("Notification" in window)) return;
+
+    const createNotif = () => {
       new Notification(title, { body });
       playSound();
+    };
+
+    if (Notification.permission === "granted") {
+      createNotif();
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          createNotif();
+        }
+      });
     }
   };
 
-  // ✅ Fetch sensors + trigger alerts
+  // ✅ Fetch sensor data + trigger alerts
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch("http://10.157.44.151:2713/sensor/latest");
         const data = await res.json();
+
         if (data.success) {
-          setSensorData((prev) => {
-            const old = prev || {};
+          const newData = data.data;
 
-            // 🌧 Rain Alert
-            if (data.data.rain === 1 && old.rain !== 1) {
-              showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।");
-            }
+          // 🌧 Rain Alert
+          if (newData.rain === 1 && sensorData.rain !== 1) {
+            showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।");
+          }
 
-            // 🌬 Wind Alert (>0.4)
-            if (data.data.voltage > 0.4 && (old.voltage ?? 0) <= 0.4) {
-              showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।");
-            }
+          // 🌬 Wind Alert (>0.4)
+          if (newData.voltage > 0.4 && (sensorData.voltage ?? 0) <= 0.4) {
+            showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।");
+          }
 
-            // 🐄 Grazing Alert
-            if (data.data.button === 1 && old.button !== 1) {
-              showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!");
-            }
+          // 🐄 Grazing Alert
+          if (newData.button === 1 && sensorData.button !== 1) {
+            showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!");
+          }
 
-            return data.data;
-          });
+          setSensorData(newData);
+        } else {
+          setSensorData(emptyData);
         }
       } catch (err) {
         console.error("Error fetching sensor data:", err);
+        setSensorData(emptyData);
       }
     };
 
     fetchData();
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [sensorData]); // 👈 dependency add kiya
 
+  // ✅ Crop Sensors
   const cropSensors = [
     { title: "मिट्टी का तापमान (Soil Temperature) 🌡️", value: sensorData.soilTemp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" /> },
     { title: "मिट्टी की नमी (Soil Moisture) 💧", value: sensorData.soilMoist ?? unavailableText, icon: <Droplets className="w-7 h-7 text-cyan-300" /> },
@@ -90,6 +123,7 @@ function Diagnose() {
     { title: "मिट्टी तापमान (2) (Soil Temperature (2))", value: sensorData.ds18b20Temp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-red-400" /> },
   ];
 
+  // ✅ Environment Alerts
   const environmentAlerts = [
     { title: "क्षेत्र तापमान (Area Temperature) 🌡️", value: sensorData.bmpTemp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-yellow-400" /> },
     { title: "दबाव (Pressure - mmHg)", value: sensorData.pressure ?? unavailableText, icon: <Gauge className="w-7 h-7 text-sky-400" /> },
