@@ -14,14 +14,14 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-// ✅ Import sound
+// ✅ Import sound + satellite
 import notificationSound from "../assets/notification.mp3";
+import satelliteImg from "../assets/satellite.png";
 
 function Diagnose() {
   const [sensorData, setSensorData] = useState({});
   const unavailableText = "डिवाइस उपलब्ध नहीं है (Device Unavailable)";
 
-  // ✅ Empty default values
   const emptyData = {
     soilTemp: 0,
     soilMoist: 0,
@@ -39,28 +39,23 @@ function Diagnose() {
     button: 0,
   };
 
-  // ✅ Ask notification permission
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
   }, []);
 
-  // ✅ Play sound
   const playSound = () => {
     const audio = new Audio(notificationSound);
     audio.play().catch(() => {});
   };
 
-  // ✅ Show notification
   const showNotification = (title, body) => {
     if (!("Notification" in window)) return;
-
     const createNotif = () => {
       new Notification(title, { body });
       playSound();
     };
-
     if (Notification.permission === "granted") {
       createNotif();
     } else if (Notification.permission !== "denied") {
@@ -72,7 +67,6 @@ function Diagnose() {
     }
   };
 
-  // ✅ Fetch sensor data + trigger alerts
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -82,17 +76,14 @@ function Diagnose() {
         if (data.success) {
           const newData = data.data;
 
-          // 🌧 Rain Alert
           if (newData.rain === 1 && sensorData.rain !== 1) {
             showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।");
           }
 
-          // 🌬 Wind Alert (>0.4)
           if (newData.voltage > 0.4 && (sensorData.voltage ?? 0) <= 0.4) {
             showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।");
           }
 
-          // 🐄 Grazing Alert
           if (newData.button === 1 && sensorData.button !== 1) {
             showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!");
           }
@@ -110,9 +101,8 @@ function Diagnose() {
     fetchData();
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
-  }, [sensorData]); // 👈 dependency add kiya
+  }, [sensorData]);
 
-  // ✅ Crop Sensors
   const cropSensors = [
     { title: "मिट्टी का तापमान (Soil Temperature) 🌡️", value: sensorData.soilTemp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" /> },
     { title: "मिट्टी की नमी (Soil Moisture) 💧", value: sensorData.soilMoist ?? unavailableText, icon: <Droplets className="w-7 h-7 text-cyan-300" /> },
@@ -123,7 +113,6 @@ function Diagnose() {
     { title: "मिट्टी तापमान (2) (Soil Temperature (2))", value: sensorData.ds18b20Temp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-red-400" /> },
   ];
 
-  // ✅ Environment Alerts
   const environmentAlerts = [
     { title: "क्षेत्र तापमान (Area Temperature) 🌡️", value: sensorData.bmpTemp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-yellow-400" /> },
     { title: "दबाव (Pressure - mmHg)", value: sensorData.pressure ?? unavailableText, icon: <Gauge className="w-7 h-7 text-sky-400" /> },
@@ -147,11 +136,21 @@ function Diagnose() {
       </div>
 
       <div className="pt-[64px] relative z-10">
-        {/* Title */}
-        <div className="relative z-10 p-8 text-center">
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-sky-400 drop-shadow-lg">
-            🌾 खेत का लाइव निदान (Live Farm Diagnosis)
-          </h1>
+        {/* Title with Satellite */}
+        <div className="relative z-10 p-8 text-center flex flex-col items-center justify-center">
+          <div className="flex items-center gap-3">
+            <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-sky-400 drop-shadow-lg">
+              🌾 खेत का लाइव निदान (Live Farm Diagnosis)
+            </h1>
+            <img
+              src={satelliteImg}
+              alt="Satellite"
+              className="w-12 h-12 animate-bounce"
+            />
+          </div>
+          <p className="text-sm text-gray-400 mt-2 italic">
+            Connecting with Satellite...
+          </p>
           <p className="text-lg text-emerald-200 mt-2">
             वास्तविक समय के सेंसर और पर्यावरण अलर्ट (Real-time Sensors & Environment Alerts)
           </p>
