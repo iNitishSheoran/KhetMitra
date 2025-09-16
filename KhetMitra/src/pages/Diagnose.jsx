@@ -11,6 +11,7 @@ import {
   CloudRain,
   Gauge,
   Wind,
+  MapPin,
   AlertTriangle,
 } from "lucide-react";
 
@@ -57,6 +58,7 @@ function Diagnose() {
     { title: "स्थानीय तापमान, ऊंचाई, दबाव ", value: unavailableText, icon: <Gauge className="w-7 h-7 text-sky-400" /> },
     { title: "पशु चराई सूचना", value: unavailableText, icon: <AlertTriangle className="w-7 h-7 text-red-400" /> },
     { title: "तेज़ हवा / आंधी अलर्ट", value: unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" /> },
+    { title: "खेत दृष्टि", value: unavailableText, icon: <MapPin className="w-7 h-7 text-indigo-400" /> },
   ];
 
   const glowStyle = {
