@@ -14,8 +14,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-// ✅ Import sound + satellite
-import notificationSound from "../assets/notification.mp3";
+// ✅ Import specific sounds + satellite
+import rainSound from "../assets/rain.mp3";
+import animalSound from "../assets/animal.mp3";
+import windSound from "../assets/wind.mp3";
 import satelliteImg from "../assets/satellite.png";
 
 function Diagnose() {
@@ -45,17 +47,21 @@ function Diagnose() {
     }
   }, []);
 
-  const playSound = () => {
-    const audio = new Audio(notificationSound);
+  // ✅ Utility: play given sound file
+  const playSound = (src) => {
+    const audio = new Audio(src);
     audio.play().catch(() => {});
   };
 
-  const showNotification = (title, body) => {
+  // ✅ Show notification with custom sound
+  const showNotification = (title, body, soundFile) => {
     if (!("Notification" in window)) return;
+
     const createNotif = () => {
       new Notification(title, { body });
-      playSound();
+      if (soundFile) playSound(soundFile);
     };
+
     if (Notification.permission === "granted") {
       createNotif();
     } else if (Notification.permission !== "denied") {
@@ -76,16 +82,31 @@ function Diagnose() {
         if (data.success) {
           const newData = data.data;
 
+          // 🌧 Rain Alert
           if (newData.rain === 1 && sensorData.rain !== 1) {
-            showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।");
+            showNotification(
+              "🌧 बारिश अलर्ट",
+              "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।",
+              rainSound
+            );
           }
 
+          // 🌬 Wind Alert (>0.4)
           if (newData.voltage > 0.4 && (sensorData.voltage ?? 0) <= 0.4) {
-            showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।");
+            showNotification(
+              "🌬 हवा अलर्ट",
+              "तेज़ हवा चल रही है, सावधान रहें।",
+              windSound
+            );
           }
 
+          // 🚨 Grazing Alert
           if (newData.button === 1 && sensorData.button !== 1) {
-            showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!");
+            showNotification(
+              "🚨 पशु अलर्ट",
+              "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!",
+              animalSound
+            );
           }
 
           setSensorData(newData);
