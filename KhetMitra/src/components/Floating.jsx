@@ -1,165 +1,246 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Share2, ThumbsUp, Star } from "lucide-react";
+import { Phone, Share2, ThumbsUp, Send, Sparkles } from "lucide-react";
 
-function Floating() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Floating() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [language, setLanguage] = useState("hi");
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [feedback, setFeedback] = useState("");
   const [rating, setRating] = useState(0);
 
-  const handleSubmit = () => {
+  const chatEndRef = useRef(null);
+
+  // ✅ Use env variable instead of hardcoded key
+  const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+
+  // 📞 Call
+  const handleCall = () => (window.location.href = "tel:+917988100765");
+
+  // 📤 Share
+  const handleShare = () => {
+    const text = encodeURIComponent("🌱 किसान मित्र, मेरी खेती के अनुभव को देखें! 🚜");
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
+
+  // Scroll to bottom after each message
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, loading]);
+
+  // 🤖 Send Message via Groq
+  const sendMessage = async () => {
+    if (!chatInput.trim()) return;
+    const userMessage = { role: "user", content: chatInput };
+    setChatMessages((prev) => [...prev, userMessage]);
+    setChatInput("");
+    setLoading(true);
+
+    try {
+      const systemInstruction =
+        language === "ml"
+          ? "You are KhetMitra, a helpful farming assistant. Respond in Malayalam."
+          : language === "hi"
+          ? "You are KhetMitra, a helpful farming assistant. Respond in Hindi."
+          : "You are KhetMitra, a helpful farming assistant. Respond in English.";
+
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [
+            { role: "system", content: systemInstruction },
+            ...chatMessages,
+            userMessage,
+          ],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error.message || "API error");
+      }
+
+      const botReply =
+        data?.choices?.[0]?.message?.content ||
+        (language === "hi"
+          ? "माफ़ करें, अभी उत्तर उपलब्ध नहीं है।"
+          : "Sorry, no response available right now.");
+
+      setChatMessages((prev) => [...prev, { role: "assistant", content: botReply }]);
+    } catch (err) {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `❌ Error: ${err.message}` },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 📝 Feedback Submit
+  const handleSubmitFeedback = () => {
     alert(
       `🙏 धन्यवाद ${name || "Farmer"}!\nFeedback: ${feedback}\nRating: ${rating}⭐`
     );
     setName("");
     setFeedback("");
     setRating(0);
-    setIsOpen(false);
-  };
-
-  const handleCall = () => {
-    window.location.href = "tel:+917988100765";
-  };
-
-  const handleShare = () => {
-    const text = encodeURIComponent("🌱 किसान मित्र, मेरी खेती के अनुभव को देखें!");
-    window.open(`https://wa.me/?text=${text}`, "_blank");
+    setIsFeedbackOpen(false);
   };
 
   return (
     <>
-      {/* Floating Action Buttons */}
-      <div className="fixed bottom-6 right-6 flex flex-col items-center gap-6 z-50">
-        {/* AI Icon */}
+      {/* 🌟 Floating Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col items-center mr-0 gap-6 z-50">
+        {/* Chatbot Button */}
         <motion.div
-          className="relative flex flex-col items-center cursor-pointer z-40"
+          className="relative flex flex-col items-center cursor-pointer"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          onClick={() =>
-            window.open(
-              "https://huggingface.co/spaces/sangal-aarushi/KhetMitraAI",
-              "_blank"
-            )
-          }
+          onClick={() => setIsChatOpen(true)}
         >
-          {/* Glowing Rings - won't block clicks */}
-          <span className="pointer-events-none absolute w-20 h-20 rounded-2xl border-4 border-purple-500 opacity-40 animate-ping" />
-          <span className="pointer-events-none absolute w-28 h-28 rounded-2xl border-4 border-purple-400 opacity-30 animate-ping [animation-delay:0.6s]" />
-          <span className="pointer-events-none absolute w-36 h-36 rounded-2xl border-4 border-purple-300 opacity-20 animate-ping [animation-delay:1.2s]" />
-
-          {/* Brain Icon */}
-          <div className="relative z-10 w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-2xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="white"
-              className="w-9 h-9"
-            >
-              <path d="M9 2a3 3 0 0 0-3 3v2.5a2.5 2.5 0 0 0 0 5V14a3 3 0 0 0 3 3v4a3 3 0 0 0 3 3h.5V2H12a3 3 0 0 0-3-3zm6 0a3 3 0 0 1 3 3v2.5a2.5 2.5 0 0 1 0 5V14a3 3 0 0 1-3 3v4a3 3 0 0 1-3 3h-.5V2H12a3 3 0 0 1 3-3z" />
-            </svg>
+          <span className="pointer-events-none absolute w-20 h-20 rounded-full border-4 border-purple-500 opacity-40 animate-ping" />
+          <div className="relative z-10 w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-600 flex items-center justify-center shadow-2xl">
+            <Sparkles className="text-white w-8 h-8" />
           </div>
           <p className="mt-2 text-sm font-semibold text-purple-700 text-center">
-            KhetMitra AI
+            Ask KhetMitra
           </p>
         </motion.div>
 
-        {/* Action Buttons */}
+        {/* Call / Share / Feedback */}
         <div className="flex flex-col gap-3">
           <button
             onClick={handleCall}
-            className="w-14 h-14 rounded-xl bg-yellow-500 flex items-center justify-center shadow-lg hover:bg-yellow-600 transition"
+            className="w-14 h-14 rounded-full bg-yellow-500 flex items-center justify-center shadow-lg hover:scale-110 transition"
           >
             <Phone className="text-white w-6 h-6" />
           </button>
 
           <button
             onClick={handleShare}
-            className="w-14 h-14 rounded-xl bg-blue-900 flex items-center justify-center shadow-lg hover:bg-blue-800 transition"
+            className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center shadow-lg hover:scale-110 transition"
           >
             <Share2 className="text-white w-6 h-6" />
           </button>
 
           <button
-            onClick={() => setIsOpen(true)}
-            className="w-14 h-14 rounded-xl bg-green-600 flex items-center justify-center shadow-lg hover:bg-green-800 transition"
+            onClick={() => setIsFeedbackOpen(true)}
+            className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center shadow-lg hover:scale-110 transition"
           >
             <ThumbsUp className="text-white w-6 h-6" />
           </button>
         </div>
       </div>
 
-      {/* Feedback Modal */}
+      {/* 💬 Chat Modal */}
       <AnimatePresence>
-        {isOpen && (
+        {isChatOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.3 }}
             className="fixed inset-0 flex items-center justify-center bg-black/40 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <div className="bg-white p-6 rounded-2xl shadow-2xl w-[90%] max-w-md">
-              <h2 className="text-2xl font-bold text-green-700 text-center mb-6">
-                🌾 अपनी राय साझा करें
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white p-6 rounded-3xl shadow-2xl w-[90%] max-w-md flex flex-col h-[75vh] border border-purple-200"
+            >
+              <h2 className="text-2xl font-bold text-center text-purple-700 mb-2">
+                🤖 KhetMitra Chatbot
               </h2>
 
-              <div className="flex flex-col gap-4">
-                {/* Name Input */}
+              {/* 🌐 Language Selector */}
+              <div className="flex justify-center gap-3 my-2">
+                {[
+                  { code: "ml", label: "Malayalam" },
+                  { code: "hi", label: "Hindi" },
+                  { code: "en", label: "English" },
+                ].map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`px-3 py-1 rounded-full text-sm font-semibold transition ${
+                      language === lang.code
+                        ? "bg-purple-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* 💬 Chat Messages */}
+              <div className="flex-1 overflow-y-auto border p-3 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 space-y-3 shadow-inner">
+                {chatMessages.map((msg, i) => (
+                  <div
+                    key={i}
+                    className={`p-3 rounded-2xl text-sm whitespace-pre-wrap shadow ${
+                      msg.role === "user"
+                        ? "bg-purple-100 self-end ml-auto"
+                        : "bg-green-100 self-start"
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                ))}
+                {loading && (
+                  <p className="text-center text-gray-500 animate-pulse">
+                    ✍️ Typing...
+                  </p>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* 🧠 Input */}
+              <div className="flex mt-3 gap-2">
                 <input
-                  type="text"
-                  placeholder="आपका नाम"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full p-3 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  placeholder={
+                    language === "ml"
+                      ? "നിങ്ങളുടെ ചോദ്യം എഴുതുക..."
+                      : language === "hi"
+                      ? "अपना प्रश्न लिखें..."
+                      : "Type your question..."
+                  }
+                  className="flex-1 border rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-inner"
                 />
-
-                {/* Feedback Input */}
-                <textarea
-                  placeholder="अपनी राय लिखें..."
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  className="w-full p-3 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  rows="4"
-                />
-
-                {/* Rating */}
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      onClick={() => setRating(star)}
-                      className={`w-8 h-8 cursor-pointer transition ${
-                        rating >= star
-                          ? "fill-green-600 text-green-600"
-                          : "text-gray-400 hover:text-green-400"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                {/* Buttons */}
                 <button
-                  onClick={handleSubmit}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white py-3 rounded-lg font-semibold shadow-md hover:from-green-700 hover:to-green-600 transition"
+                  onClick={sendMessage}
+                  disabled={loading}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 rounded-xl shadow hover:scale-105 transition"
                 >
-                  ✅ Submit Feedback
-                </button>
-
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full text-gray-600 font-medium py-2 hover:underline"
-                >
-                  ❌ Cancel
+                  <Send className="w-5 h-5" />
                 </button>
               </div>
-            </div>
+
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="mt-3 text-sm text-gray-500 hover:text-gray-700 underline text-center"
+              >
+                ❌ Close Chat
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
 }
-
-export default Floating;
