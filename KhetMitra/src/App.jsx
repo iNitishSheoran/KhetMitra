@@ -1,5 +1,7 @@
-import './App.css'
+import './App.css';
 import { Routes, Route } from "react-router-dom";
+
+// ✅ Pages
 import Body from './pages/Body';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
@@ -13,27 +15,33 @@ import UserProfile from './pages/UserProfile';
 import EditProfile from "./pages/EditProfile";
 import Daam from "./pages/Daam";
 import KMStudio from './pages/KM-Studio';
-import Shop from './pages/Shop.jsx';
+import Shop from './pages/Shop';
+import WeatherPage from "./pages/WeatherPage";
+import Forecast from "./pages/Forecast";
+
+// ✅ Components
+import WeatherButton from "./components/WeatherButton";
 
 function App() {
   return (
     <div>
-     
       <Routes>
         <Route path="/" element={<Body />} />
-        <Route path="/signup" element={<Signup/>} />
-        <Route path="/login" element={<Login/>} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/help" element={<HelpForm />} />
         <Route path="/my-requests" element={<MyRequests />} />
-        <Route path="/cropData" element={<CropPage/>}/>
-        <Route path="/allHelp" element={<AdminAllHelp/>} />
-        <Route path="/about" element={<About/>} />
-        <Route path="/diagnose" element={<Diagnose/>} />
-        <Route path="/myProfile" element={<UserProfile/>} />
-        <Route path="/editProfile" element={<EditProfile/>} />
-        <Route path="/daam" element={<Daam/>} />
-        <Route path="/kmstudio" element={<KMStudio/>} />
-        <Route path="/shopping" element={<Shop/>} />
+        <Route path="/cropData" element={<CropPage />} />
+        <Route path="/allHelp" element={<AdminAllHelp />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/diagnose" element={<Diagnose />} />
+        <Route path="/myProfile" element={<UserProfile />} />
+        <Route path="/editProfile" element={<EditProfile />} />
+        <Route path="/daam" element={<Daam />} />
+        <Route path="/kmstudio" element={<KMStudio />} />
+        <Route path="/shopping" element={<Shop />} />
+        <Route path="/weather" element={<WeatherPage />} />
+        <Route path="/forecast" element={<Forecast />} /> {/* ✅ New Route */}
       </Routes>
     </div>
   );
