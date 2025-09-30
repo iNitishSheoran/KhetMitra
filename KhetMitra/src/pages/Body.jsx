@@ -14,6 +14,7 @@ import Floating from "../components/Floating";
 import Diagnose from "./Diagnose";
 import Footer from "../components/Footer";
 import WeatherWidget from "../components/WeatherWidget";
+import FarmSizeCard from "../components/FarmSizeCard"; // ✅ new import
 
 const banners = [Banner1, Banner2, Banner3, Banner4];
 
@@ -69,7 +70,7 @@ function Body() {
           </AnimatePresence>
         </div>
 
-        {/* ✅ Tagline + Weather */}
+        {/* ✅ Tagline + Weather + Farm Box */}
         <div className="flex flex-col lg:flex-row items-center justify-between py-[3rem] pb-[8rem] gap-12 bg-[#e3efe6] w-full">
           {/* Left section */}
           <div className="w-full lg:w-1/2 px-6 sm:px-10 lg:px-12 xl:pl-20">
@@ -82,17 +83,18 @@ function Body() {
               मिट्टी से मंडी तक – हर कदम पर आपके साथ – खेतमित्र।
             </p>
 
-            {/* ✅ Weather widget */}
-            <div className="flex justify-center mt-4">
-              {weatherData ? (
-                <WeatherWidget weather={weatherData} />
-              ) : (
-                <p className="text-gray-500">Loading weather...</p>
-              )}
+            {/* ✅ Weather + Farm Summary */}
+<div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-6">
+  <FarmSizeCard />
+  {weatherData ? (
+    <WeatherWidget weather={weatherData} />
+  ) : (
+    <p className="text-gray-500">Loading weather...</p>
+  )}
             </div>
           </div>
 
-          {/* Right section */}
+          {/* Right section (video) */}
           <div className="w-full lg:w-1/2 px-6 sm:px-10 lg:px-12 xl:pr-20">
             <video
               src={Animation}

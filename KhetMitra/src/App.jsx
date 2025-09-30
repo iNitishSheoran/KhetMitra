@@ -18,6 +18,8 @@ import KMStudio from './pages/KM-Studio';
 import Shop from './pages/Shop';
 import WeatherPage from "./pages/WeatherPage";
 import Forecast from "./pages/Forecast";
+import Dashboard from "./pages/Dashboard";
+import FarmDetail from "./pages/FarmDetail";
 
 // ✅ Components
 import WeatherButton from "./components/WeatherButton";
@@ -42,6 +44,8 @@ function App() {
         <Route path="/shopping" element={<Shop />} />
         <Route path="/weather" element={<WeatherPage />} />
         <Route path="/forecast" element={<Forecast />} /> {/* ✅ New Route */}
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/farm-detail" element={<FarmDetail />} />
       </Routes>
     </div>
   );
