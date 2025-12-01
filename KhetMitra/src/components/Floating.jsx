@@ -13,26 +13,23 @@ export default function Floating() {
   const [feedback, setFeedback] = useState("");
   const [rating, setRating] = useState(0);
 
-  const chatEndRef = useRef(null);
+  const [isOn, setIsOn] = useState(false); // ✅ Motor Toggle State
 
-  // ✅ Use env variable instead of hardcoded key
+  const chatEndRef = useRef(null);
   const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
-  // 📞 Call
   const handleCall = () => (window.location.href = "tel:+917988100765");
 
-  // 📤 Share
   const handleShare = () => {
     const text = encodeURIComponent("🌱 किसान मित्र, मेरी खेती के अनुभव को देखें! 🚜");
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
 
-  // Scroll to bottom after each message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages, loading]);
 
-  // 🤖 Send Message via Groq
+
   const sendMessage = async () => {
     if (!chatInput.trim()) return;
     const userMessage = { role: "user", content: chatInput };
@@ -65,10 +62,7 @@ export default function Floating() {
       });
 
       const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error.message || "API error");
-      }
+      if (data.error) throw new Error(data.error.message || "API error");
 
       const botReply =
         data?.choices?.[0]?.message?.content ||
@@ -87,7 +81,7 @@ export default function Floating() {
     }
   };
 
-  // 📝 Feedback Submit
+
   const handleSubmitFeedback = () => {
     alert(
       `🙏 धन्यवाद ${name || "Farmer"}!\nFeedback: ${feedback}\nRating: ${rating}⭐`
@@ -98,10 +92,27 @@ export default function Floating() {
     setIsFeedbackOpen(false);
   };
 
+
   return (
     <>
       {/* 🌟 Floating Buttons */}
-      <div className="fixed bottom-6 right-6 flex flex-col items-center mr-0 gap-6 z-50">
+      <div className="fixed bottom-6 right-1 flex flex-col items-center mr-0 gap-6 z-50">
+
+        {/* ✅ MOTOR TOGGLE IMAGE + BUTTON ABOVE ASK KHETMITRA */}
+        <div className="flex flex-col items-center">
+
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsOn(!isOn)}
+            className={`mt-2 px-5 py-2 rounded-xl text-white font-semibold shadow-lg
+              ${isOn ? "bg-green-600" : "bg-red-600"}`}
+          >
+            {isOn ? "Turn OFF Motor" : "Turn ON Motor"}
+          </motion.button>
+        </div>
+        {/* ✅ END OF ADDED CODE */}
+
+
         {/* Chatbot Button */}
         <motion.div
           className="relative flex flex-col items-center cursor-pointer"
@@ -144,7 +155,8 @@ export default function Floating() {
         </div>
       </div>
 
-      {/* 💬 Chat Modal */}
+
+      {/* Chat Modal */}
       <AnimatePresence>
         {isChatOpen && (
           <motion.div
@@ -164,7 +176,6 @@ export default function Floating() {
                 🤖 KhetMitra Chatbot
               </h2>
 
-              {/* 🌐 Language Selector */}
               <div className="flex justify-center gap-3 my-2">
                 {[
                   { code: "ml", label: "Malayalam" },
@@ -185,7 +196,6 @@ export default function Floating() {
                 ))}
               </div>
 
-              {/* 💬 Chat Messages */}
               <div className="flex-1 overflow-y-auto border p-3 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 space-y-3 shadow-inner">
                 {chatMessages.map((msg, i) => (
                   <div
@@ -207,7 +217,6 @@ export default function Floating() {
                 <div ref={chatEndRef} />
               </div>
 
-              {/* 🧠 Input */}
               <div className="flex mt-3 gap-2">
                 <input
                   value={chatInput}

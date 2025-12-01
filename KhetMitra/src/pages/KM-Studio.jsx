@@ -2,60 +2,61 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 
+// ✅ Corrected Video IDs + Thumbnails + Embed URLs
 const videos = [
   {
     id: 1,
-    url: "https://www.youtube.com/embed/GOf4givZqMI",
-    thumb: "https://img.youtube.com/vi/GOf4givZqMI/hqdefault.jpg",
+    ytId: "yC9prywMHyQ",
+    url: "https://www.youtube.com/embed/yC9prywMHyQ",
     title: "AI se Kisanon ki Madad",
     desc: "KhetMitra se kisanon ko market price aur farming tips ki sahaj jankari.",
   },
   {
     id: 2,
-    url: "https://www.youtube.com/embed/9DaI8DzNF5k",
-    thumb: "https://img.youtube.com/vi/9DaI8DzNF5k/hqdefault.jpg",
+    ytId: "niFhBuQtRco",
+    url: "https://www.youtube.com/embed/niFhBuQtRco",
     title: "Beej se Bechne tak",
     desc: "AI ke sath kheti ka safar: Beej se lekar mandi tak ka safar ab aasaan.",
   },
   {
     id: 3,
-    url: "https://www.youtube.com/embed/kIP0aOj3Zpk",
-    thumb: "https://img.youtube.com/vi/kIP0aOj3Zpk/hqdefault.jpg",
+    ytId: "lOL5wwyPgdI",
+    url: "https://www.youtube.com/embed/lOL5wwyPgdI",
     title: "Mandi Price Update",
     desc: "Real-time mandi ke daam, ab KhetMitra se har kisan ke phone par.",
   },
   {
     id: 4,
-    url: "https://www.youtube.com/embed/0tKzFhwvb9Q",
-    thumb: "https://img.youtube.com/vi/0tKzFhwvb9Q/hqdefault.jpg",
+    ytId: "1FGaGdAG_lk",
+    url: "https://www.youtube.com/embed/1FGaGdAG_lk",
     title: "Smart Farming",
     desc: "AI se kheti aur bhi smart – samay aur fasal dono ki bachat.",
   },
   {
     id: 5,
-    url: "https://www.youtube.com/embed/SUCvZeeMRSA",
-    thumb: "https://img.youtube.com/vi/SUCvZeeMRSA/hqdefault.jpg",
+    ytId: "8xKkwvXjC6w",
+    url: "https://www.youtube.com/embed/8xKkwvXjC6w",
     title: "Shorts 1",
     desc: "AI powered farming innovations – Shorts version.",
   },
   {
     id: 6,
-    url: "https://www.youtube.com/embed/l_GU2tItZZk",
-    thumb: "https://img.youtube.com/vi/l_GU2tItZZk/hqdefault.jpg",
+    ytId: "1ADOQGz5JsI",
+    url: "https://www.youtube.com/embed/1ADOQGz5JsI",
     title: "Shorts 2",
     desc: "Mandi prices & insights in 60 seconds.",
   },
   {
     id: 7,
-    url: "https://www.youtube.com/embed/HcwnO8Dsdv8",
-    thumb: "https://img.youtube.com/vi/HcwnO8Dsdv8/hqdefault.jpg",
+    ytId: "B9G57zv2z6Y",
+    url: "https://www.youtube.com/embed/B9G57zv2z6Y",
     title: "Shorts 3",
     desc: "Quick tips for smart farming.",
   },
   {
     id: 8,
-    url: "https://www.youtube.com/embed/K4jBRxo7RuI",
-    thumb: "https://img.youtube.com/vi/K4jBRxo7RuI/hqdefault.jpg",
+    ytId: "cE7DrrzFz_Q",
+    url: "https://www.youtube.com/embed/cE7DrrzFz_Q",
     title: "Shorts 4",
     desc: "AI + Kisan = Future farming revolution.",
   },
@@ -68,36 +69,11 @@ export default function KMStudio() {
     <div className="relative min-h-screen bg-gradient-to-br from-green-100 via-emerald-200 to-green-300 overflow-hidden">
       <Navbar />
 
-      {/* Navbar ke niche thoda space */}
       <div className="pt-28 px-8">
-        {/* Floating Farming Icons */}
-        <motion.span
-          className="absolute text-6xl left-10 top-32 opacity-20"
-          animate={{ y: [0, 20, 0] }}
-          transition={{ repeat: Infinity, duration: 6 }}
-        >
-          🚜
-        </motion.span>
-        <motion.span
-          className="absolute text-5xl right-20 top-48 opacity-20"
-          animate={{ y: [0, -15, 0] }}
-          transition={{ repeat: Infinity, duration: 5 }}
-        >
-          🌾
-        </motion.span>
-        <motion.span
-          className="absolute text-6xl left-1/2 bottom-20 opacity-20"
-          animate={{ y: [0, 25, 0] }}
-          transition={{ repeat: Infinity, duration: 7 }}
-        >
-          🌱
-        </motion.span>
-
         <h1 className="text-4xl md:text-5xl font-bold text-green-900 text-center mb-12 drop-shadow-lg">
           🌾 KhetMitra – AI se Kisanon ki Shakti 🌱
         </h1>
 
-        {/* Video Grid */}
         <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto relative z-10">
           {videos.map((video) => (
             <motion.div
@@ -107,13 +83,13 @@ export default function KMStudio() {
               transition={{ type: "spring", stiffness: 200 }}
               onClick={() => setOpenVideo(video)}
             >
-              {/* Thumbnail */}
               <div className="relative h-64 overflow-hidden">
                 <img
-                  src={video.thumb}
+                  src={`https://img.youtube.com/vi/${video.ytId}/hqdefault.jpg`}
                   alt={video.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
+
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                   <motion.div
                     className="p-6 rounded-full bg-white/30 backdrop-blur-md border border-white shadow-lg"
@@ -129,12 +105,12 @@ export default function KMStudio() {
                     </svg>
                   </motion.div>
                 </div>
+
                 <span className="absolute bottom-3 right-3 text-xs bg-green-800 text-white px-3 py-1 rounded-full shadow-md">
                   Tap to Play
                 </span>
               </div>
 
-              {/* Content */}
               <div className="p-5">
                 <h2 className="text-2xl font-bold text-green-900 drop-shadow-sm">
                   {video.title}
@@ -146,7 +122,6 @@ export default function KMStudio() {
         </div>
       </div>
 
-      {/* Video Modal */}
       {openVideo && (
         <motion.div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
@@ -161,9 +136,9 @@ export default function KMStudio() {
             <div className="relative">
               <iframe
                 src={`${openVideo.url}?autoplay=1`}
-                title="YouTube video player"
+                title={openVideo.title}
                 className="w-full h-[420px] md:h-[540px]"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen
               ></iframe>
               <button
@@ -173,6 +148,7 @@ export default function KMStudio() {
                 ✖ Close
               </button>
             </div>
+
             <div className="p-5">
               <h2 className="text-2xl font-bold text-green-900">
                 {openVideo.title}

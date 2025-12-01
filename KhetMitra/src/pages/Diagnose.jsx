@@ -21,8 +21,8 @@ import windSound from "../assets/wind.mp3";
 import satelliteImg from "../assets/satellite.png";
 
 // ✅ Gemini API Key (frontend visible, better use backend for security)
-const GEMINI_API_KEY = "AIzaSyC5_ATHKUvuOIz4jKA1YBSm2OKTewHAjA8";
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_API_KEY = "AIzaSyAdm6uRnosqi5WNp78gEObA19810y9SYQ8m                                                          ";
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
 
 export default function Diagnose() {
   const [sensorData, setSensorData] = useState({});
@@ -79,7 +79,7 @@ export default function Diagnose() {
     let mounted = true;
     const fetchSensor = async () => {
       try {
-        const res = await fetch("http://10.157.44.151:2713/sensor/latest");
+        const res = await fetch("http://10.134.39.151:2713/sensor/latest");
         const data = await res.json();
         if (!mounted) return;
         if (data?.success) {
