@@ -165,3 +165,81 @@ export default function HelpForm() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+// import Navbar from "../components/Navbar";
+// import { HeartHandshake, Smile, Sparkles } from "lucide-react";
+
+// export default function HelpForm() {
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+//       <Navbar />
+
+//       <main className="flex flex-col items-center justify-center text-center px-6 py-20">
+//         {/* Cute Icon */}
+//         <div className="bg-green-600 text-white p-5 rounded-full shadow-lg mb-6 animate-bounce">
+//           <HeartHandshake className="w-12 h-12" />
+//         </div>
+
+//         {/* Heading */}
+//         <h1 className="text-4xl md:text-5xl font-extrabold text-green-800 mb-4">
+//           🥔 Aloo needs help too!
+//         </h1>
+
+//         <p className="text-lg text-gray-700 max-w-xl mb-8">
+//           Before helping farmers,  
+//           our Aloo is learning, training, and getting smarter 🤓🌱  
+//         </p>
+
+//         {/* Funny Card */}
+//         <div className="bg-white rounded-2xl shadow-xl border border-green-200 p-8 max-w-lg w-full">
+//           <div className="flex items-center justify-center gap-2 mb-4">
+//             <Smile className="w-6 h-6 text-green-600" />
+//             <h2 className="text-2xl font-bold text-green-700">
+//               Team Aloo Intelligence 🥔❤️
+//             </h2>
+//           </div>
+
+//           <p className="text-gray-700 mb-4">
+//             Aloo says:
+//           </p>
+
+//           <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-2">
+//             <p className="text-green-800 font-semibold">
+//               🥺 “Mujhe thoda time do…”
+//             </p>
+//             <p className="text-sm text-green-700">
+//               Main expert se seekh raha hoon,  
+//               taaki main aapki madad aur achhe se kar sakoon 🌾
+//             </p>
+//           </div>
+
+//           <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+//             <p className="font-semibold text-yellow-800">
+//               💪 All 4 Aloo are working together!
+//             </p>
+//             <p className="text-sm text-yellow-700">
+//               Jab Aloo ready hoga, help bhi rocket speed se aayegi 🚀
+//             </p>
+//           </div>
+//         </div>
+
+//         {/* Footer */}
+//         <div className="mt-10 flex items-center gap-2 text-green-700 font-medium">
+//           <Sparkles className="w-5 h-5" />
+//           With love, patience & Aloo 🥔💚
+//         </div>
+//       </main>
+//     </div>
+//   );
+// }
