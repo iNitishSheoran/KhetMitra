@@ -41,7 +41,7 @@ export default function CropPage() {
       setLoading(true);
       try {
         const res = await axios.get(
-          // `${BASE_URL}/crop/details/${encodeURIComponent(selectedCrop)}`
+          `${BASE_URL}/crop/details/${encodeURIComponent(selectedCrop)}`
         );
         setTimeout(() => {
           setCropDetails(res.data.crop);
