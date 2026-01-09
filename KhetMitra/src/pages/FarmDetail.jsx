@@ -1,3 +1,9 @@
+// India average crop yield ≈ 1.5–2.2 tons / acre = we're using 1.8 tons/acre
+// Fertilizer usage ≈ 50–70 kg / acre = we're using 60 kg/acre
+// Pesticide usage ≈ 0.2–0.5 litres / acre = we're using 0.35 litres/acre
+
+
+
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
