@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import useWeather from "../hooks/useWeather";
+import useWeatherByLocation from "../hooks/useWeatherByLocation";
 
 export default function WeatherButton() {
-  const { data, loading } = useWeather();
-  const temp = data?.current ? Math.round(data.current.temp) : "--";
-  const desc = data?.current?.weather?.[0]?.main || "";
+  const { data, loading } = useWeatherByLocation();
+
+  const temp = data?.main ? Math.round(data.main.temp) : "--";
+  const desc = data?.weather?.[0]?.main || "";
 
   return (
     <Link
@@ -22,7 +23,7 @@ export default function WeatherButton() {
         gap: "10px",
       }}
     >
-      🌤 {loading ? "Loading..." : `${temp}°C, ${desc}`}
+      📍 {loading ? "Detecting..." : `${temp}°C, ${desc}`}
     </Link>
   );
 }
