@@ -4,41 +4,41 @@ import { BASE_URL } from "../config";
 
 export default function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(null); // null = loading
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check authentication status
-  const checkAuth = useCallback(async () => {
-    setLoading(true);
+  const fetchUser = useCallback(async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/auth/check`, { withCredentials: true });
-      setIsAuthenticated(res.data?.authenticated === true);
-    } catch (err) {
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
+      const res = await axios.get(`${BASE_URL}/profile/view`, { withCredentials: true });
+      setUser(res.data);
+    } catch {
+      setUser(null);
     }
   }, []);
 
-  // Fetch user info
-  const refreshUser = useCallback(async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/profile/view`, { withCredentials: true });
-    setUser(res.data);
-  } catch {
-    setUser(null);
-  }
-}, []);
+  const checkAuthAndUser = useCallback(async () => {
+    setLoading(true); // ✅ keep loader until everything is ready
+    try {
+      const res = await axios.get(`${BASE_URL}/auth/check`, { withCredentials: true });
+      const auth = res.data?.authenticated === true;
+      setIsAuthenticated(auth);
 
-  // Run on mount and when auth state changes
+      if (auth) {
+        await fetchUser(); // ✅ wait for user fetch
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false); // ✅ only now hide loader
+    }
+  }, [fetchUser]);
+
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    checkAuthAndUser();
+  }, [checkAuthAndUser]);
 
-  useEffect(() => {
-    if (isAuthenticated) refreshUser();
-    else setUser(null);
-  }, [isAuthenticated, refreshUser]);
-
-  return { isAuthenticated, loading, user, refreshUser, refreshAuth: checkAuth };
+  return { isAuthenticated, loading, user, refreshUser: fetchUser, refreshAuth: checkAuthAndUser };
 }
