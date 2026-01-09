@@ -40,7 +40,6 @@ export default function Signup() {
     district: "",
     crops: "",
     age: "",
-    cropHistory: "", // ✅ fixed lowercase key
   });
   const [loading, setLoading] = useState(false);
   const [bioLoading, setBioLoading] = useState(false); // 🔹 new biometric loader
@@ -199,7 +198,7 @@ export default function Signup() {
               placeholder="Age"
               required
             />
-            <InputField
+            {/* <InputField
               icon={User} // ✅ different icon
               type="text"
               name="cropHistory"
@@ -207,7 +206,7 @@ export default function Signup() {
               onChange={handleChange}
               placeholder="Crop History"
               required
-            />
+            /> */}
 
             <div className="md:col-span-2">
               <button
