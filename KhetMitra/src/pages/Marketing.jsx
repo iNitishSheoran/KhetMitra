@@ -51,9 +51,9 @@ function Marketing() {
             खेतमित्र से खेती होगी आसान और नुकसान होगा कम।
           </p>
           <Link to="https://huggingface.co/spaces/sangal-aarushi/CropDiseaseDetection">
-          <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
+          {/* <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
             अभी आज़माएँ 🚀
-          </button>
+          </button> */}
           </Link>
         </motion.div>
       </div>
