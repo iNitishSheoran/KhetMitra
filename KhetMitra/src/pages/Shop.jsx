@@ -10,7 +10,7 @@ function Shop() {
     { id: 1, name: "Fingerprint Signup Device", image: S1, price: 600, description: "Fingerprint-based signup module" },
     { id: 2, name: "NPK Sensor with OLED Display", image: S2, price: 2800, description: "Soil nutrient sensor with OLED" },
     { id: 3, name: "Soil Moisture Charger", image: S3, price: 480, description: "Device for soil moisture charging" },
-    { id: 4, name: "NPK Sensor with App & Web Tracking", image: S4, price: 6800, description: "Tracks soil pH, pressure, altitude, moisture, N, P, K levels" },
+    { id: 4, name: "NPK Sensor with App & Web Tracking", image: S4, price: 5000, description: "Tracks soil pH, pressure, altitude, moisture, N, P, K levels" },
   ];
 
   const [cart, setCart] = useState([]);
