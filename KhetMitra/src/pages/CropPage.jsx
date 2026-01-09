@@ -33,7 +33,7 @@ export default function CropPage() {
     fetchCrops();
   }, []);
 
-  // Fetch crop details
+  // Fetch crop details.
   useEffect(() => {
     if (!selectedCrop) return;
 
