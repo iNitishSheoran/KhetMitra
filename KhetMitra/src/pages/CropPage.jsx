@@ -38,21 +38,22 @@ export default function CropPage() {
     if (!selectedCrop) return;
 
     const fetchCropDetails = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(
-          `${BASE_URL}/crop/details/${encodeURIComponent(selectedCrop)}`
-        );
-        setTimeout(() => {
-          setCropDetails(res.data.crop);
-          setLoading(false);
-        }, 400);
-      } catch (err) {
-        console.error(err);
-        setError("🚜 Crop data not found. Please try another crop.");
-        setLoading(false);
-      }
-    };
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/crop/details?name=${encodeURIComponent(selectedCrop)}`
+    );
+    setTimeout(() => {
+      setCropDetails(res.data.crop);
+      setLoading(false);
+    }, 400);
+  } catch (err) {
+    console.error(err);
+    setError("🚜 Crop data not found. Please try another crop.");
+    setLoading(false);
+  }
+};
+
     fetchCropDetails();
   }, [selectedCrop]);
 
