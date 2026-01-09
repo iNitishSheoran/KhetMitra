@@ -54,11 +54,12 @@ export default function Navbar() {
       {/* Nav Links */}
       <div className="hidden md:flex space-x-8 text-lg font-medium">
         <Link to="/diagnose" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Diagnose</Link>
-        <Link to="/cropData" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Crop Data</Link>
         <Link to="/about" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">About Us</Link>
         <Link to="/help" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Help</Link>
-        <Link to="/daam" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Daam</Link>
+        <Link to="/cropData" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">Crop Data</Link>
+        <Link to="/daam" className="hover:text-[#4ADE80] hover:scale-105 transition-all duration-200">BazaarBhav</Link>
         <Link to="/kmstudio" className="hover:text-[#FACC15] hover:scale-110 text-cyan-200 transition-all duration-300">KM-Studio</Link>
+        <Link to="/shopping" className="hover:text-[#da6262] hover:scale-105 text-red-300 transition-all duration-200">Shop 🛒</Link>
       </div>
 
       {/* Profile */}
@@ -81,6 +82,8 @@ export default function Navbar() {
               <Link to="/about" className="px-4 py-2 hover:bg-[#4ADE80]/20">About Us</Link>
               <Link to="/help" className="px-4 py-2 hover:bg-[#4ADE80]/20">Help</Link>
               <Link to="/daam" className="px-4 py-2 hover:bg-[#4ADE80]/20">Daam</Link>
+              <Link to="/kmstudio" className="px-4 py-2 hover:bg-[#4ADE80]/20">KM-Studio</Link>
+              <Link to="/shopping" className="px-4 py-2 hover:bg-[#4ADE80]/20">Shop us 🛒</Link>
             </div>
 
             {!isAuthenticated && (

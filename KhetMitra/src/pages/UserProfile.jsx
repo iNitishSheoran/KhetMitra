@@ -4,10 +4,10 @@ import Navbar from "../components/Navbar";
 import { FaPhoneAlt, FaLeaf, FaMapMarkerAlt, FaUser, FaTractor } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { ClipLoader } from "react-spinners";
-import { useUser } from "../context/UserContext.jsx"; // ✅ using context
+import { useUser } from "../context/UserContext.jsx"; // ✅ Context
 
 export default function UserProfile() {
-  const { user, loading } = useUser(); // ✅ pull user from context
+  const { user, loading } = useUser(); // ✅ Data from context
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   if (loading) {
@@ -26,6 +26,7 @@ export default function UserProfile() {
     );
   }
 
+  // ✅ Default profile pic
   const imageUrl =
     user?.photoUrl ||
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
@@ -89,6 +90,11 @@ export default function UserProfile() {
               value={user?.crops?.length ? user.crops.join(", ") : "Not provided"}
             />
             <DetailCard icon={<FaUser />} label="Age" value={user?.age} />
+            <DetailCard
+              icon={<FaUser />}
+              label="Crop History"
+              value={user?.cropHistory?.length ? user.cropHistory.join(", ") : "Not provided"}
+            />
           </div>
         </div>
       </div>
@@ -121,6 +127,7 @@ export default function UserProfile() {
   );
 }
 
+// ✅ Reusable detail card
 function DetailCard({ icon, label, value }) {
   return (
     <div className="bg-white/40 backdrop-blur-md border border-green-200 p-5 rounded-2xl shadow-md hover:shadow-xl transition transform hover:scale-105">

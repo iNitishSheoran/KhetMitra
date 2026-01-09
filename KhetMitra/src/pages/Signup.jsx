@@ -6,7 +6,16 @@ import { useNavigate } from "react-router-dom";
 import farmerImg from "../assets/indian-farmer.png";
 
 // Icons
-import { User, Mail, Lock, Phone, MapPin, Leaf, Calendar } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Phone,
+  MapPin,
+  Leaf,
+  Calendar,
+  Fingerprint,
+} from "lucide-react";
 
 // ⬇️ InputField moved outside component + forwardRef to preserve focus
 const InputField = forwardRef(({ icon: Icon, ...props }, ref) => (
@@ -31,29 +40,57 @@ export default function Signup() {
     district: "",
     crops: "",
     age: "",
+    cropHistory: "", // ✅ fixed lowercase key
   });
   const [loading, setLoading] = useState(false);
+  const [bioLoading, setBioLoading] = useState(false); // 🔹 new biometric loader
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    console.log("Field updated:", e.target.name, "→", e.target.value); // ✅ debug
   };
 
+  // Normal form signup
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
     try {
-      const res = await axios.post(`${BASE_URL}/signup`, form, { withCredentials: true });
+      const res = await axios.post(`${BASE_URL}/signup`, form, {
+        withCredentials: true,
+      });
       setMessage(res.data?.message || "✅ Account created");
-      // Navigate after short delay to show success message
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
-      // Show backend message (e.g., phone/email duplicate)
       const msg = err.response?.data?.message || "❌ Signup failed";
       setMessage(msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 🔹 New biometric signup
+  const handleBiometricSignup = async () => {
+    try {
+      setBioLoading(true);
+      setMessage("");
+      const res = await axios.post(`${BASE_URL}/api/biometric/enroll`, {
+        sensorModel: "R307S",
+      });
+      if (res.data.success) {
+        setMessage("✅ Biometric signup successful!");
+        setTimeout(() => navigate("/"), 1500);
+      } else {
+        setMessage("⚠️ Biometric signup failed. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage(
+        "❌ Error: Unable to fetch data from Aadhaar servers. Please try again later."
+      );
+    } finally {
+      setBioLoading(false);
     }
   };
 
@@ -85,7 +122,11 @@ export default function Signup() {
             </p>
           )}
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Normal signup form */}
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             <InputField
               icon={User}
               type="text"
@@ -158,6 +199,15 @@ export default function Signup() {
               placeholder="Age"
               required
             />
+            <InputField
+              icon={User} // ✅ different icon
+              type="text"
+              name="cropHistory"
+              value={form.cropHistory}
+              onChange={handleChange}
+              placeholder="Crop History"
+              required
+            />
 
             <div className="md:col-span-2">
               <button
@@ -169,6 +219,20 @@ export default function Signup() {
               </button>
             </div>
           </form>
+
+          {/* 🔹 Biometric Signup Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleBiometricSignup}
+              disabled={bioLoading}
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-3 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg hover:shadow-2xl"
+            >
+              <Fingerprint className="w-5 h-5" />
+              {bioLoading
+                ? "🔄 Scanning Fingerprint..."
+                : "Use Fingerprint to Sign Up"}
+            </button>
+          </div>
 
           <p className="mt-6 text-center text-sm text-gray-700">
             Already have an account?{" "}

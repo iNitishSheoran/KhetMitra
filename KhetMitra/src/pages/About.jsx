@@ -2,6 +2,7 @@ import React from "react";
 import { Typewriter } from "react-simple-typewriter";
 import Navbar from "../components/Navbar";
 import farmerImg from "../assets/About.png";
+import { Link } from "react-router-dom"; // ✅ import Link
 
 function About() {
   return (
@@ -28,7 +29,7 @@ function About() {
                   "⛈️ मौसम की खबर रहे आपके पास",
                   "💚 KhetMitra बने खेती का विश्वास",
                 ]}
-                loop={0} // infinite loop
+                loop={0}
                 cursor
                 cursorStyle="|"
                 typeSpeed={50}
@@ -43,9 +44,13 @@ function About() {
               रोग पहचान और मौसम अलर्ट — ताकि आपकी मेहनत का हर दाना सोना बने। 🌾
             </p>
 
-            <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition transform hover:scale-105">
+            {/* ✅ Button replaced with Link */}
+            <Link
+              to="/signup"
+              className="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition transform hover:scale-105"
+            >
               खेतमित्र से जुड़ें 🚜
-            </button>
+            </Link>
           </div>
 
           <div className="flex-1 flex justify-center">

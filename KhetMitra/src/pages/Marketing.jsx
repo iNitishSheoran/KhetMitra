@@ -50,7 +50,7 @@ function Marketing() {
             दवा और इलाज की सही सलाह मिले 💊।  
             खेतमित्र से खेती होगी आसान और नुकसान होगा कम।
           </p>
-          <Link to="/cropData">
+          <Link to="https://huggingface.co/spaces/sangal-aarushi/CropDiseaseDetection">
           <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
             अभी आज़माएँ 🚀
           </button>
