@@ -128,44 +128,49 @@ export default function Diagnose() {
   const DEPLOYED_BE_URL = "https://khetmitra-be.onrender.com";
   const DEVICE_ID = "FIELD_001";
 
-  const fetchSensor = async () => {
-    try {
-      const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
-      const data = await res.json();
-      if (!mounted) return;
+ const fetchSensor = async () => {
+  try {
+    const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
+    const data = await res.json();
 
-      if (data?.success) {
-        const newData = data.data;
+    if (!mounted) return;
 
-        // Alerts
-        if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
-          showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
-        }
-        if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
-          showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
-        }
-        if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
-          showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
-        }
+    // Check if device is disconnected
+    const deviceDisconnected = !data?.success || data.disconnected;
 
-        setSensorData(newData);
+    if (!deviceDisconnected) {
+      const newData = data.data;
 
-        // Gemini API call only once
-        if (!recCalledRef.current) {
-          const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
-          if (valid) {
-            recCalledRef.current = true;
-            callGeminiForRecommendation(newData);
-          }
-        }
-      } else {
-        setSensorData(emptyData);
+      // ✅ Alerts only if device is connected
+      if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
+        showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
       }
-    } catch (e) {
-      console.error("Sensor fetch error:", e);
-      setSensorData(emptyData);
+      if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
+        showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
+      }
+      if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
+        showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
+      }
+
+      setSensorData(newData);
+
+      // Gemini API call only once
+      if (!recCalledRef.current) {
+        const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
+        if (valid) {
+          recCalledRef.current = true;
+          callGeminiForRecommendation(newData);
+        }
+      }
+    } else {
+      // Device disconnected → show empty / unavailable data
+      setSensorData(null); // <-- make sure your UI handles null
     }
-  };
+  } catch (e) {
+    console.error("Sensor fetch error:", e);
+    setSensorData(null); // treat as disconnected on error
+  }
+};
 
   fetchSensor();
   const interval = setInterval(fetchSensor, 5000);
@@ -216,25 +221,90 @@ Format: list of 3 crops with emojis, then short reasons and one-line tip.`;
   };
 
   // ✅ UI
-  const cropSensors = [
-    { title: "मिट्टी का तापमान (Soil Temperature) 🌡️", value: sensorData.soilTemp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-orange-400" /> },
-    { title: "मिट्टी की नमी (Soil Moisture) 💧", value: sensorData.soilMoist ?? unavailableText, icon: <Droplets className="w-7 h-7 text-cyan-300" /> },
-    { title: "मिट्टी का pH (Soil pH)", value: sensorData.soilPH ?? unavailableText, icon: <FlaskConical className="w-7 h-7 text-emerald-300" /> },
-    { title: "नाइट्रोजन (Nitrogen - N)", value: sensorData.nitrogen ?? unavailableText, icon: <Leaf className="w-7 h-7 text-green-400" /> },
-    { title: "फॉस्फोरस (Phosphorus - P)", value: sensorData.phosphorus ?? unavailableText, icon: <Leaf className="w-7 h-7 text-teal-300" /> },
-    { title: "पोटेशियम (Potassium - K)", value: sensorData.potassium ?? unavailableText, icon: <Leaf className="w-7 h-7 text-lime-300" /> },
-    { title: "मिट्टी तापमान (2) (Soil Temperature (2))", value: sensorData.ds18b20Temp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-red-400" /> },
-  ];
+ const cropSensors = [
+  {
+    title: "मिट्टी का तापमान (Soil Temperature) 🌡️",
+    value: sensorData ? sensorData.soilTemp : unavailableText,
+    icon: <Thermometer className="w-7 h-7 text-orange-400" />,
+  },
+  {
+    title: "मिट्टी की नमी (Soil Moisture) 💧",
+    value: sensorData ? sensorData.soilMoist : unavailableText,
+    icon: <Droplets className="w-7 h-7 text-cyan-300" />,
+  },
+  {
+    title: "मिट्टी का pH (Soil pH)",
+    value: sensorData ? sensorData.soilPH : unavailableText,
+    icon: <FlaskConical className="w-7 h-7 text-emerald-300" />,
+  },
+  {
+    title: "नाइट्रोजन (Nitrogen - N)",
+    value: sensorData ? sensorData.nitrogen : unavailableText,
+    icon: <Leaf className="w-7 h-7 text-green-400" />,
+  },
+  {
+    title: "फॉस्फोरस (Phosphorus - P)",
+    value: sensorData ? sensorData.phosphorus : unavailableText,
+    icon: <Leaf className="w-7 h-7 text-teal-300" />,
+  },
+  {
+    title: "पोटेशियम (Potassium - K)",
+    value: sensorData ? sensorData.potassium : unavailableText,
+    icon: <Leaf className="w-7 h-7 text-lime-300" />,
+  },
+  {
+    title: "मिट्टी तापमान (2) (Soil Temperature (2))",
+    value: sensorData ? sensorData.ds18b20Temp : unavailableText,
+    icon: <Thermometer className="w-7 h-7 text-red-400" />,
+  },
+];
 
-  const environmentAlerts = [
-    { title: "क्षेत्र तापमान (Area Temperature) 🌡️", value: sensorData.bmpTemp ?? unavailableText, icon: <Thermometer className="w-7 h-7 text-yellow-400" /> },
-    { title: "दबाव (Pressure - mmHg)", value: sensorData.pressure ?? unavailableText, icon: <Gauge className="w-7 h-7 text-sky-400" /> },
-    { title: "ऊँचाई (Altitude - m)", value: sensorData.altitude ?? unavailableText, icon: <MapPin className="w-7 h-7 text-indigo-400" /> },
-    { title: "वर्षा सूचना ☔वर्षा सूचना (Rain Alert) ☔", value: sensorData.rain === 1 ? "हाँ" : "नहीं", icon: <CloudRain className="w-7 h-7 text-sky-400" /> },
-    { title: "प्रकाश तीव्रता (Light Intensity - LDR)", value: sensorData.ldr ?? unavailableText, icon: <Sun className="w-7 h-7 text-yellow-400" /> },
-    { title: "तेज़ हवा / आंधी अलर्ट (Wind Alert) ⚡", value: sensorData.voltage ?? unavailableText, icon: <Wind className="w-7 h-7 text-indigo-400" /> },
-    { title: "पशु चराई सूचना (Grazing Alert)", value: sensorData.button === 1 ? "हाँ" : "नहीं", icon: <AlertTriangle className="w-7 h-7 text-red-400" /> },
-  ];
+const environmentAlerts = [
+  {
+    title: "क्षेत्र तापमान (Area Temperature) 🌡️",
+    value: sensorData ? sensorData.bmpTemp : unavailableText,
+    icon: <Thermometer className="w-7 h-7 text-yellow-400" />,
+  },
+  {
+    title: "दबाव (Pressure - mmHg)",
+    value: sensorData ? sensorData.pressure : unavailableText,
+    icon: <Gauge className="w-7 h-7 text-sky-400" />,
+  },
+  {
+    title: "ऊँचाई (Altitude - m)",
+    value: sensorData ? sensorData.altitude : unavailableText,
+    icon: <MapPin className="w-7 h-7 text-indigo-400" />,
+  },
+  {
+    title: "वर्षा सूचना ☔",
+    value: sensorData
+      ? sensorData.rain === 1
+        ? "हाँ"
+        : "नहीं"
+      : unavailableText,
+    icon: <CloudRain className="w-7 h-7 text-sky-400" />,
+  },
+  {
+    title: "प्रकाश तीव्रता (Light Intensity - LDR)",
+    value: sensorData ? sensorData.ldr : unavailableText,
+    icon: <Sun className="w-7 h-7 text-yellow-400" />,
+  },
+  {
+    title: "तेज़ हवा / आंधी अलर्ट (Wind Alert) ⚡",
+    value: sensorData ? sensorData.voltage : unavailableText,
+    icon: <Wind className="w-7 h-7 text-indigo-400" />,
+  },
+  {
+    title: "पशु चराई सूचना (Grazing Alert)",
+    value: sensorData
+      ? sensorData.button === 1
+        ? "हाँ"
+        : "नहीं"
+      : unavailableText,
+    icon: <AlertTriangle className="w-7 h-7 text-red-400" />,
+  },
+];
+
 
   const glowStyle = {
     boxShadow: "0 0 20px rgba(72,187,120,0.2)",
