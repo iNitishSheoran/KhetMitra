@@ -75,53 +75,106 @@ export default function Diagnose() {
   };
 
   // ✅ Fetch sensor data every 5s
+  // useEffect(() => {
+  //   let mounted = true;
+  //   const fetchSensor = async () => {
+  //     try {
+  //       const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
+  //       const data = await res.json();
+  //       if (!mounted) return;
+  //       if (data?.success) {
+  //         const newData = data.data;
+
+  //         // Alerts
+  //         if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
+  //           showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
+  //         }
+  //         if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
+  //           showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
+  //         }
+  //         if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
+  //           showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
+  //         }
+
+  //         setSensorData(newData);
+
+  //         // ✅ Gemini API call only once (when data first becomes valid)
+  //         if (!recCalledRef.current) {
+  //           const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
+  //           if (valid) {
+  //             recCalledRef.current = true;
+  //             callGeminiForRecommendation(newData);
+  //           }
+  //         }
+  //       } else {
+  //         setSensorData(emptyData);
+  //       }
+  //     } catch (e) {
+  //       console.error("Sensor fetch error:", e);
+  //       setSensorData(emptyData);
+  //     }
+  //   };
+
+  //   fetchSensor();
+  //   const interval = setInterval(fetchSensor, 5000);
+  //   return () => {
+  //     mounted = false;
+  //     clearInterval(interval);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    let mounted = true;
-    const fetchSensor = async () => {
-      try {
-        const res = await fetch("http://10.134.39.151:2713/sensor/latest");
-        const data = await res.json();
-        if (!mounted) return;
-        if (data?.success) {
-          const newData = data.data;
+  let mounted = true;
+  const DEPLOYED_BE_URL = "https://khetmitra-be.onrender.com";
+  const DEVICE_ID = "ESP_01";
 
-          // Alerts
-          if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
-            showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
-          }
-          if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
-            showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
-          }
-          if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
-            showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
-          }
+  const fetchSensor = async () => {
+    try {
+      const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
+      const data = await res.json();
+      if (!mounted) return;
 
-          setSensorData(newData);
+      if (data?.success) {
+        const newData = data.data;
 
-          // ✅ Gemini API call only once (when data first becomes valid)
-          if (!recCalledRef.current) {
-            const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
-            if (valid) {
-              recCalledRef.current = true;
-              callGeminiForRecommendation(newData);
-            }
-          }
-        } else {
-          setSensorData(emptyData);
+        // Alerts
+        if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
+          showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
         }
-      } catch (e) {
-        console.error("Sensor fetch error:", e);
+        if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
+          showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
+        }
+        if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
+          showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
+        }
+
+        setSensorData(newData);
+
+        // Gemini API call only once
+        if (!recCalledRef.current) {
+          const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
+          if (valid) {
+            recCalledRef.current = true;
+            callGeminiForRecommendation(newData);
+          }
+        }
+      } else {
         setSensorData(emptyData);
       }
-    };
+    } catch (e) {
+      console.error("Sensor fetch error:", e);
+      setSensorData(emptyData);
+    }
+  };
 
-    fetchSensor();
-    const interval = setInterval(fetchSensor, 5000);
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, []);
+  fetchSensor();
+  const interval = setInterval(fetchSensor, 5000);
+  return () => {
+    mounted = false;
+    clearInterval(interval);
+  };
+}, []);
+
 
   // ✅ Gemini API call
   const callGeminiForRecommendation = async (data) => {
