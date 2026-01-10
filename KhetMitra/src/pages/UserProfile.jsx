@@ -90,6 +90,11 @@ export default function UserProfile() {
               value={user?.crops?.length ? user.crops.join(", ") : "Not provided"}
             />
             <DetailCard icon={<FaUser />} label="Age" value={user?.age} />
+            <DetailCard
+              icon={<FaUser />}
+              label="KCC"
+              value={<span className="text-gray-400">Only updated by banks</span>}
+            />
           </div>
         </div>
       </div>
