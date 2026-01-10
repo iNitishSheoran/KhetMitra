@@ -126,7 +126,7 @@ export default function Diagnose() {
   useEffect(() => {
   let mounted = true;
   const DEPLOYED_BE_URL = "https://khetmitra-be.onrender.com";
-  const DEVICE_ID = "ESP_01";
+  const DEVICE_ID = "FIELD_001";
 
   const fetchSensor = async () => {
     try {
