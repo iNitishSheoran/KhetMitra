@@ -21,7 +21,7 @@ import windSound from "../assets/wind.mp3";
 import satelliteImg from "../assets/satellite.png";
 
 // ✅ Gemini API Key (frontend visible, better use backend for security)
-const GEMINI_API_KEY = "AIzaSyAdm6uRnosqi5WNp78gEObA19810y9SYQ8m                                                          ";
+const GEMINI_API_KEY = "AIzaSyAHdxiTov8uN55kFMcHt0I7ebaDhedJjT4";
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
 
 export default function Diagnose() {
