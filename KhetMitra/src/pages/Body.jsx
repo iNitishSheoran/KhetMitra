@@ -14,14 +14,17 @@ import Floating from "../components/Floating";
 import Diagnose from "./Diagnose";
 import Footer from "../components/Footer";
 import WeatherWidget from "../components/WeatherWidget";
-import FarmSizeCard from "../components/FarmSizeCard"; // ✅ new import
+import FarmSizeCard from "../components/FarmSizeCard";
+import useWeatherByLocation from "../hooks/useWeatherByLocation";
 
 const banners = [Banner1, Banner2, Banner3, Banner4];
 
 function Body() {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [openFeedback, setOpenFeedback] = useState(false);
-  const [weatherData, setWeatherData] = useState(null);
+  // const [weatherData, setWeatherData] = useState(null);
+
+  const { data: weatherData, place, loading } = useWeatherByLocation();
 
   // 🔁 Banner rotation
   useEffect(() => {
@@ -31,23 +34,23 @@ function Body() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🌤️ Fetch weather data
-  useEffect(() => {
-    const fetchWeather = async () => {
-      const apiKey = "efcd381b82e9238378f622303354a388"; // ✅ working key
-      const city = "Delhi";
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  // // 🌤️ Fetch weather data
+  // useEffect(() => {
+  //   const fetchWeather = async () => {
+  //     const apiKey = "efcd381b82e9238378f622303354a388"; // ✅ working key
+  //     const city = "Delhi";
+  //     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-        setWeatherData(json);
-      } catch (err) {
-        console.error("Weather fetch error:", err);
-      }
-    };
-    fetchWeather();
-  }, []);
+  //     try {
+  //       const res = await fetch(url);
+  //       const json = await res.json();
+  //       setWeatherData(json);
+  //     } catch (err) {
+  //       console.error("Weather fetch error:", err);
+  //     }
+  //   };
+  //   fetchWeather();
+  // }, []);
 
   return (
     <div className="w-full overflow-x-hidden">
@@ -84,13 +87,15 @@ function Body() {
             </p>
 
             {/* ✅ Weather + Farm Summary */}
-<div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-6">
-  <FarmSizeCard />
-  {weatherData ? (
-    <WeatherWidget weather={weatherData} />
-  ) : (
-    <p className="text-gray-500">Loading weather...</p>
-  )}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-6">
+              <FarmSizeCard />
+              {loading ? (
+                <p className="text-gray-500">📍 Detecting location...</p>
+              ) : weatherData ? (
+                <WeatherWidget weather={weatherData} place={place} />
+              ) : (
+                <p className="text-red-500">❌ Weather unavailable</p>
+              )}
             </div>
           </div>
 

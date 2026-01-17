@@ -1,8 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function WeatherWidget({ weather }) {
-  const navigate = useNavigate();
 
   if (!weather) {
     return (
@@ -29,13 +26,6 @@ export default function WeatherWidget({ weather }) {
           src={`https://openweathermap.org/img/wn/${icon}@2x.png`}
           alt="icon"
         />
-
-        <button
-          onClick={() => navigate("/weather")}
-          className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg"
-        >
-          7 Days Forecast
-        </button>
       </div>
     </div>
   );

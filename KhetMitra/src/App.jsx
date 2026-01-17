@@ -43,7 +43,7 @@ function App() {
         <Route path="/kmstudio" element={<KMStudio />} />
         <Route path="/shopping" element={<Shop />} />
         <Route path="/weather" element={<WeatherPage />} />
-        <Route path="/forecast" element={<Forecast />} /> {/* ✅ New Route */}
+        <Route path="/forecast" element={<Forecast />} /> 
         <Route path="/" element={<Dashboard />} />
         <Route path="/farm-detail" element={<FarmDetail />} />
       </Routes>

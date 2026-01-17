@@ -28,6 +28,7 @@ export default function Diagnose() {
   const [sensorData, setSensorData] = useState({});
   const [recommendation, setRecommendation] = useState("Waiting for data...");
   const [loadingRec, setLoadingRec] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(false);
 
   const recCalledRef = useRef(false); // ✅ to ensure only one call
   const unavailableText = "डिवाइस उपलब्ध नहीं है (Device Unavailable)";
@@ -57,7 +58,7 @@ export default function Diagnose() {
 
   const playSound = (src) => {
     const audio = new Audio(src);
-    audio.play().catch(() => {});
+    audio.play().catch(() => { });
   };
 
   const showNotification = (title, body, soundFile) => {
@@ -74,111 +75,73 @@ export default function Diagnose() {
     }
   };
 
-  // ✅ Fetch sensor data every 5s
-  // useEffect(() => {
-  //   let mounted = true;
-  //   const fetchSensor = async () => {
-  //     try {
-  //       const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
-  //       const data = await res.json();
-  //       if (!mounted) return;
-  //       if (data?.success) {
-  //         const newData = data.data;
+  const handleFetchData = () => {
+    setIsFetchingData(true);
+  }
 
-  //         // Alerts
-  //         if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
-  //           showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
-  //         }
-  //         if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
-  //           showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
-  //         }
-  //         if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
-  //           showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
-  //         }
-
-  //         setSensorData(newData);
-
-  //         // ✅ Gemini API call only once (when data first becomes valid)
-  //         if (!recCalledRef.current) {
-  //           const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
-  //           if (valid) {
-  //             recCalledRef.current = true;
-  //             callGeminiForRecommendation(newData);
-  //           }
-  //         }
-  //       } else {
-  //         setSensorData(emptyData);
-  //       }
-  //     } catch (e) {
-  //       console.error("Sensor fetch error:", e);
-  //       setSensorData(emptyData);
-  //     }
-  //   };
-
-  //   fetchSensor();
-  //   const interval = setInterval(fetchSensor, 5000);
-  //   return () => {
-  //     mounted = false;
-  //     clearInterval(interval);
-  //   };
-  // }, []);
+  const handleStopData = () => {
+    setIsFetchingData(false);
+  }
 
   useEffect(() => {
-  let mounted = true;
-  const DEPLOYED_BE_URL = "https://khetmitra-be.onrender.com";
-  const DEVICE_ID = "FIELD_001";
+    let mounted = true;
+    const DEPLOYED_BE_URL = "https://khetmitra-be.onrender.com";
+    const DEVICE_ID = "FIELD_001";
 
- const fetchSensor = async () => {
-  try {
-    const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
-    const data = await res.json();
+    const fetchSensor = async () => {
+      try {
+        const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
+        const data = await res.json();
+        if (!mounted) return;
 
-    if (!mounted) return;
+        const deviceDisconnected = !data?.success || data.disconnected;
 
-    // Check if device is disconnected
-    const deviceDisconnected = !data?.success || data.disconnected;
+        if (!deviceDisconnected) {
+          const newData = data.data;
 
-    if (!deviceDisconnected) {
-      const newData = data.data;
+          // ✅ Alerts only if device is connected
+          if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
+            showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
+          }
+          if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
+            showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
+          }
+          if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
+            showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
+          }
 
-      // ✅ Alerts only if device is connected
-      if (newData.rain === 1 && (sensorData.rain ?? 0) !== 1) {
-        showNotification("🌧 बारिश अलर्ट", "तेज़ हवा और बारिश शुरू हो गई है, सामान संभाल लो।", rainSound);
-      }
-      if (newData.voltage > 5 && (sensorData.voltage ?? 0) <= 5) {
-        showNotification("🌬 हवा अलर्ट", "तेज़ हवा चल रही है, सावधान रहें।", windSound);
-      }
-      if (newData.button === 1 && (sensorData.button ?? 0) !== 1) {
-        showNotification("🚨 पशु अलर्ट", "पशु खेत में प्रवेश कर गए हैं, फसल बचाइए!", animalSound);
-      }
+          setSensorData(newData);
 
-      setSensorData(newData);
-
-      // Gemini API call only once
-      if (!recCalledRef.current) {
-        const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
-        if (valid) {
-          recCalledRef.current = true;
-          callGeminiForRecommendation(newData);
+          // ✅ Gemini API call only once
+          if (!recCalledRef.current) {
+            const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
+            if (valid) {
+              recCalledRef.current = true;
+              callGeminiForRecommendation(newData);
+            }
+          }
+        } else {
+          setSensorData(null);
         }
+      } catch (e) {
+        console.error("Sensor fetch error:", e);
+        setSensorData(null);
       }
-    } else {
-      // Device disconnected → show empty / unavailable data
-      setSensorData(null); // <-- make sure your UI handles null
-    }
-  } catch (e) {
-    console.error("Sensor fetch error:", e);
-    setSensorData(null); // treat as disconnected on error
-  }
-};
+    };
 
-  fetchSensor();
-  const interval = setInterval(fetchSensor, 5000);
-  return () => {
-    mounted = false;
-    clearInterval(interval);
-  };
-}, []);
+    // Fetch only after button is clicked
+    let interval;
+    if (isFetchingData) {
+      fetchSensor(); // fetch immediately once
+      interval = setInterval(fetchSensor, 5000); // then repeat every 5s
+    }
+
+    return () => {
+      mounted = false;
+      if (interval) clearInterval(interval);
+    };
+  }, [isFetchingData]); // 👈 dependency ensures it runs only after click
+
 
 
   // ✅ Gemini API call
@@ -221,89 +184,89 @@ Format: list of 3 crops with emojis, then short reasons and one-line tip.`;
   };
 
   // ✅ UI
- const cropSensors = [
-  {
-    title: "मिट्टी का तापमान (Soil Temperature) 🌡️",
-    value: sensorData ? sensorData.soilTemp : unavailableText,
-    icon: <Thermometer className="w-7 h-7 text-orange-400" />,
-  },
-  {
-    title: "मिट्टी की नमी (Soil Moisture) 💧",
-    value: sensorData ? sensorData.soilMoist : unavailableText,
-    icon: <Droplets className="w-7 h-7 text-cyan-300" />,
-  },
-  {
-    title: "मिट्टी का pH (Soil pH)",
-    value: sensorData ? sensorData.soilPH : unavailableText,
-    icon: <FlaskConical className="w-7 h-7 text-emerald-300" />,
-  },
-  {
-    title: "नाइट्रोजन (Nitrogen - N)",
-    value: sensorData ? sensorData.nitrogen : unavailableText,
-    icon: <Leaf className="w-7 h-7 text-green-400" />,
-  },
-  {
-    title: "फॉस्फोरस (Phosphorus - P)",
-    value: sensorData ? sensorData.phosphorus : unavailableText,
-    icon: <Leaf className="w-7 h-7 text-teal-300" />,
-  },
-  {
-    title: "पोटेशियम (Potassium - K)",
-    value: sensorData ? sensorData.potassium : unavailableText,
-    icon: <Leaf className="w-7 h-7 text-lime-300" />,
-  },
-  {
-    title: "मिट्टी तापमान (2) (Soil Temperature (2))",
-    value: sensorData ? sensorData.ds18b20Temp : unavailableText,
-    icon: <Thermometer className="w-7 h-7 text-red-400" />,
-  },
-];
+  const cropSensors = [
+    {
+      title: "मिट्टी का तापमान (Soil Temperature) 🌡️",
+      value: sensorData ? sensorData.soilTemp : unavailableText,
+      icon: <Thermometer className="w-7 h-7 text-orange-400" />,
+    },
+    {
+      title: "मिट्टी की नमी (Soil Moisture) 💧",
+      value: sensorData ? sensorData.soilMoist : unavailableText,
+      icon: <Droplets className="w-7 h-7 text-cyan-300" />,
+    },
+    {
+      title: "मिट्टी का pH (Soil pH)",
+      value: sensorData ? sensorData.soilPH : unavailableText,
+      icon: <FlaskConical className="w-7 h-7 text-emerald-300" />,
+    },
+    {
+      title: "नाइट्रोजन (Nitrogen - N)",
+      value: sensorData ? sensorData.nitrogen : unavailableText,
+      icon: <Leaf className="w-7 h-7 text-green-400" />,
+    },
+    {
+      title: "फॉस्फोरस (Phosphorus - P)",
+      value: sensorData ? sensorData.phosphorus : unavailableText,
+      icon: <Leaf className="w-7 h-7 text-teal-300" />,
+    },
+    {
+      title: "पोटेशियम (Potassium - K)",
+      value: sensorData ? sensorData.potassium : unavailableText,
+      icon: <Leaf className="w-7 h-7 text-lime-300" />,
+    },
+    {
+      title: "मिट्टी तापमान (2) (Soil Temperature (2))",
+      value: sensorData ? sensorData.ds18b20Temp : unavailableText,
+      icon: <Thermometer className="w-7 h-7 text-red-400" />,
+    },
+  ];
 
-const environmentAlerts = [
-  {
-    title: "क्षेत्र तापमान (Area Temperature) 🌡️",
-    value: sensorData ? sensorData.bmpTemp : unavailableText,
-    icon: <Thermometer className="w-7 h-7 text-yellow-400" />,
-  },
-  {
-    title: "दबाव (Pressure - mmHg)",
-    value: sensorData ? sensorData.pressure : unavailableText,
-    icon: <Gauge className="w-7 h-7 text-sky-400" />,
-  },
-  {
-    title: "ऊँचाई (Altitude - m)",
-    value: sensorData ? sensorData.altitude : unavailableText,
-    icon: <MapPin className="w-7 h-7 text-indigo-400" />,
-  },
-  {
-    title: "वर्षा सूचना ☔",
-    value: sensorData
-      ? sensorData.rain === 1
-        ? "हाँ"
-        : "नहीं"
-      : unavailableText,
-    icon: <CloudRain className="w-7 h-7 text-sky-400" />,
-  },
-  {
-    title: "प्रकाश तीव्रता (Light Intensity - LDR)",
-    value: sensorData ? sensorData.ldr : unavailableText,
-    icon: <Sun className="w-7 h-7 text-yellow-400" />,
-  },
-  {
-    title: "तेज़ हवा / आंधी अलर्ट (Wind Alert) ⚡",
-    value: sensorData ? sensorData.voltage : unavailableText,
-    icon: <Wind className="w-7 h-7 text-indigo-400" />,
-  },
-  {
-    title: "पशु चराई सूचना (Grazing Alert)",
-    value: sensorData
-      ? sensorData.button === 1
-        ? "हाँ"
-        : "नहीं"
-      : unavailableText,
-    icon: <AlertTriangle className="w-7 h-7 text-red-400" />,
-  },
-];
+  const environmentAlerts = [
+    {
+      title: "क्षेत्र तापमान (Area Temperature) 🌡️",
+      value: sensorData ? sensorData.bmpTemp : unavailableText,
+      icon: <Thermometer className="w-7 h-7 text-yellow-400" />,
+    },
+    {
+      title: "दबाव (Pressure - mmHg)",
+      value: sensorData ? sensorData.pressure : unavailableText,
+      icon: <Gauge className="w-7 h-7 text-sky-400" />,
+    },
+    {
+      title: "ऊँचाई (Altitude - m)",
+      value: sensorData ? sensorData.altitude : unavailableText,
+      icon: <MapPin className="w-7 h-7 text-indigo-400" />,
+    },
+    {
+      title: "वर्षा सूचना ☔",
+      value: sensorData
+        ? sensorData.rain === 1
+          ? "हाँ"
+          : "नहीं"
+        : unavailableText,
+      icon: <CloudRain className="w-7 h-7 text-sky-400" />,
+    },
+    {
+      title: "प्रकाश तीव्रता (Light Intensity - LDR)",
+      value: sensorData ? sensorData.ldr : unavailableText,
+      icon: <Sun className="w-7 h-7 text-yellow-400" />,
+    },
+    {
+      title: "तेज़ हवा / आंधी अलर्ट (Wind Alert) ⚡",
+      value: sensorData ? sensorData.voltage : unavailableText,
+      icon: <Wind className="w-7 h-7 text-indigo-400" />,
+    },
+    {
+      title: "पशु चराई सूचना (Grazing Alert)",
+      value: sensorData
+        ? sensorData.button === 1
+          ? "हाँ"
+          : "नहीं"
+        : unavailableText,
+      icon: <AlertTriangle className="w-7 h-7 text-red-400" />,
+    },
+  ];
 
 
   const glowStyle = {
@@ -335,18 +298,32 @@ const environmentAlerts = [
           <p className="text-lg text-emerald-200 mt-2">
             वास्तविक समय के सेंसर और पर्यावरण अलर्ट (Real-time Sensors & Environment Alerts)
           </p>
+          {
+            isFetchingData ? (
+              <button
+                className="text-lg text-emerald-200 mt-2 border-2 border-green-600 p-3 "
+                onClick={handleStopData}
+              >Stop Fetching Data</button>
+            ) : (
+
+              <button
+                className="text-lg text-emerald-200 mt-2 border-2 border-green-600 p-3 "
+                onClick={handleFetchData}
+              >Fetch Data</button>
+            )
+          }
         </div>
 
-      {/* Crop Sensors */}
-      <div className="px-6">
-        <h2 className="text-2xl font-bold text-emerald-300 mb-4">
+        {/* Crop Sensors */}
+        <div className="px-6">
+          <h2 className="text-2xl font-bold text-emerald-300 mb-4">
             🌱 फसल स्वास्थ्य सेंसर (Crop Health Sensors)
             <span className="text-sm text-gray-400 font-normal">
-              * (डिवाइस/हार्डवेयर के बिना कार्य नहीं करेगा, कृपया कनेक्ट करें)  
+              * (डिवाइस/हार्डवेयर के बिना कार्य नहीं करेगा, कृपया कनेक्ट करें)
               *(Will not work without device/hardware, please connect)*
             </span>
           </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cropSensors.map((sensor, index) => (
               <motion.div
                 key={index}
@@ -362,18 +339,18 @@ const environmentAlerts = [
               </motion.div>
             ))}
           </div>
-      </div>
+        </div>
 
-      {/* Environment Alerts */}
-      <div className="px-6 mt-10">
-        <h2 className="text-2xl font-bold text-emerald-300 mb-4">
-            ⚡ पर्यावरण अलर्ट (Environment Alerts)  
+        {/* Environment Alerts */}
+        <div className="px-6 mt-10">
+          <h2 className="text-2xl font-bold text-emerald-300 mb-4">
+            ⚡ पर्यावरण अलर्ट (Environment Alerts)
             <span className="text-sm text-gray-400 font-normal">
-              * (डिवाइस/हार्डवेयर के बिना कार्य नहीं करेगा, कृपया कनेक्ट करें)  
+              * (डिवाइस/हार्डवेयर के बिना कार्य नहीं करेगा, कृपया कनेक्ट करें)
               *(Will not work without device/hardware, please connect)*
             </span>
           </h2>
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             {environmentAlerts.map((alert, index) => (
               <motion.div
                 key={index}
@@ -389,20 +366,20 @@ const environmentAlerts = [
               </motion.div>
             ))}
           </div>
-      </div>
+        </div>
 
-      {/* Crop Recommendation */}
-      <div className="px-6 mt-10 mb-10">
-        <h2 className="text-2xl font-bold text-emerald-300 mb-4">🌿 फसल सुझाव</h2>
-        <motion.div className="p-6 rounded-2xl" style={glowStyle} whileHover={{ scale: 1.02 }}>
-          <div className="flex justify-between mb-2">
-            <h3 className="text-lg font-semibold">अनुशंसित फसलें</h3>
-            <div className="text-sm text-gray-300">{loadingRec ? "Fetching..." : "Updated"}</div>
-          </div>
-          <pre className="whitespace-pre-wrap text-emerald-200">{recommendation}</pre>
-        </motion.div>
+        {/* Crop Recommendation */}
+        <div className="px-6 mt-10 mb-10">
+          <h2 className="text-2xl font-bold text-emerald-300 mb-4">🌿 फसल सुझाव</h2>
+          <motion.div className="p-6 rounded-2xl" style={glowStyle} whileHover={{ scale: 1.02 }}>
+            <div className="flex justify-between mb-2">
+              <h3 className="text-lg font-semibold">अनुशंसित फसलें</h3>
+              <div className="text-sm text-gray-300">{loadingRec ? "Fetching..." : "Updated"}</div>
+            </div>
+            <pre className="whitespace-pre-wrap text-emerald-200">{recommendation}</pre>
+          </motion.div>
+        </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_KEY = "efcd381b82e9238378f622303354a388";
+const WEATHER_API_KEY = "efcd381b82e9238378f622303354a388"; // OpenWeather key
 
 export default function useWeatherByLocation() {
   const [data, setData] = useState(null);
@@ -8,42 +8,47 @@ export default function useWeatherByLocation() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("📍 Requesting location permission...");
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
+        const { latitude, longitude } = pos.coords;
+        console.log("✅ Coordinates:", latitude, longitude);
 
-        console.log("LAT:", lat, "LON:", lon);
+        try {
+          // 🔹 1. Fetch weather from OpenWeather
+          const weatherRes = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}&units=metric`
+          );
+          const weatherJson = await weatherRes.json();
+          setData(weatherJson);
 
-        // 🔥 One Call API (BEST ACCURACY)
-        const weatherRes = await fetch(
-          `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`,
-          { cache: "no-store" }
-        );
-        const weatherJson = await weatherRes.json();
-
-        // Reverse Geocoding (Exact area name)
-        const placeRes = await fetch(
-          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`,
-          { cache: "no-store" }
-        );
-        const placeJson = await placeRes.json();
-
-        setData(weatherJson.current);
-        setPlace(
-          placeJson?.[0]?.name +
-            (placeJson?.[0]?.state ? ", " + placeJson[0].state : "")
-        );
-        setLoading(false);
+          // 🔹 2. Reverse geocode coordinates using OpenStreetMap
+          const placeRes = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const placeJson = await placeRes.json();
+          if (placeJson && placeJson.display_name) {
+            setPlace(placeJson.display_name); // Exact human-readable location
+          } else {
+            setPlace("Unknown Location");
+          }
+        } catch (err) {
+          console.error("❌ Error fetching weather or location:", err);
+          setPlace("Unknown Location");
+          setData(null);
+        } finally {
+          setLoading(false);
+        }
       },
       (err) => {
-        console.error(err);
+        console.error("❌ Location error:", err);
+        setPlace("Permission Denied");
         setLoading(false);
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 0,
         timeout: 10000,
+        maximumAge: 0,
       }
     );
   }, []);
