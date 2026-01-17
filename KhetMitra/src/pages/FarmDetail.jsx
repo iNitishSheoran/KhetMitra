@@ -10,6 +10,7 @@
 // Packhouse Benefit → If loss > 15%, recommend packhouse which can save additional 10% of total yield
 // Agri Infra Fund Eligibility → If cold storage needed > 5 tons, eligible for subsidy
 
+
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -28,129 +29,111 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-function FarmDetail() {
+const NAVBAR_HEIGHT = 72; // 👈 IMPORTANT (match Navbar height)
+
+const cropConfig = {
+  wheat: { yield: 1.8, fertilizer: 60, pesticide: 0.35 },
+  rice: { yield: 2.2, fertilizer: 75, pesticide: 0.45 },
+  maize: { yield: 2.0, fertilizer: 65, pesticide: 0.4 },
+  sugarcane: { yield: 35, fertilizer: 180, pesticide: 0.6 },
+  cotton: { yield: 1.2, fertilizer: 50, pesticide: 0.3 },
+};
+
+export default function FarmDetail() {
   const navigate = useNavigate();
   const query = new URLSearchParams(useLocation().search);
+
   const size = parseFloat(query.get("size")) || 0;
+  const crop = query.get("crop") || "wheat";
+  const config = cropConfig[crop];
 
-  const estimatedYield = size * 1.8;
-  const fertilizer = size * 60;
-  const pesticide = size * 0.35;
+  const estimatedYield = size * config.yield;
+  const fertilizer = size * config.fertilizer;
+  const pesticide = size * config.pesticide;
 
-  const spoilageRate = 0.18;
-  const spoilageLoss = estimatedYield * spoilageRate;
-  const marketableProduce = estimatedYield - spoilageLoss;
+  const spoilageLoss = estimatedYield * 0.18;
+  const marketable = estimatedYield - spoilageLoss;
 
-  const coldStorageQty = marketableProduce * 0.6;
-  const normalStorageQty = marketableProduce * 0.4;
+  const coldStorage = marketable * 0.6;
+  const warehouse = marketable * 0.4;
+  const savedRouting = marketable * 0.03;
 
-  const unoptimizedLossRate = 0.06;
-  const optimizedLossRate = 0.03;
-  const savedProduceByRouting =
-    marketableProduce * (unoptimizedLossRate - optimizedLossRate);
+  const packhouseSaved = estimatedYield * 0.1;
+  const agriInfraFundEligible = coldStorage > 5;
 
-  const packhouseRecommended =
-    (spoilageLoss / estimatedYield) * 100 > 15;
-
-  const packhouseSavedProduce = estimatedYield * 0.1;
-  const agriInfraFundEligible = coldStorageQty > 5;
+  const hectares = size * 0.404686;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 flex flex-col items-center p-6">
-      <Navbar/>
+    <>
+      <Navbar />
+
+      {/* 🔙 Back to Home (below navbar, fixed) */}
       <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 mb-6 px-4 py-2 bg-white rounded-full shadow-md hover:bg-green-100 transition"
+        onClick={() => navigate("/")}
+        style={{ top: NAVBAR_HEIGHT + 12 }}
+        className="fixed left-6 z-50 flex items-center gap-2
+                   bg-white px-3 py-1.5 rounded-full shadow
+                   text-green-700 font-semibold hover:bg-green-100"
       >
-        <ArrowLeft size={18} /> Back
+        <ArrowLeft size={18} /> Home
       </button>
 
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="text-center mb-10"
+      {/* MAIN CONTENT */}
+      <div
+        className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 px-6 pb-12"
+        style={{ paddingTop: NAVBAR_HEIGHT + 32 }} // 👈 KEY FIX
       >
-        <h1 className="text-3xl font-bold text-green-800">
-          🌾 Smart Farm & Post-Harvest Report
-        </h1>
-        <p className="text-gray-600 mt-2">
-          ICAR & KVK aligned scientific estimation
-        </p>
-      </motion.div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl mb-12">
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-2xl p-5 shadow-lg">
-          <Leaf className="text-green-600 mb-2" />
-          <p className="text-sm text-gray-500">Farm Size</p>
-          <p className="text-xl font-bold">{size} acres</p>
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-6"
+        >
+          <h1 className="text-3xl font-bold text-green-800">
+            🌾 Smart Farm Report
+          </h1>
+          <p className="text-gray-600 capitalize">
+            Crop: <b>{crop}</b>
+          </p>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-yellow-50 rounded-2xl p-5 shadow-lg">
-          <Sprout className="text-yellow-600 mb-2" />
-          <p className="text-sm text-gray-500">Estimated Yield</p>
-          <p className="text-xl font-bold">{estimatedYield.toFixed(2)} tons</p>
-        </motion.div>
+        {/* LAND CONVERSION */}
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl p-4 shadow mb-8 text-center">
+          <p className="text-sm text-gray-500">Land Area Conversion</p>
+          <p className="text-lg font-semibold">
+            {size} acres = {hectares.toFixed(2)} hectares
+          </p>
+        </div>
 
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-blue-50 rounded-2xl p-5 shadow-lg">
-          <FlaskRound className="text-blue-600 mb-2" />
-          <p className="text-sm text-gray-500">Fertilizer Required</p>
-          <p className="text-xl font-bold">{fertilizer.toFixed(1)} kg</p>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-red-50 rounded-2xl p-5 shadow-lg">
-          <Bug className="text-red-600 mb-2" />
-          <p className="text-sm text-gray-500">Pesticide Required</p>
-          <p className="text-xl font-bold">{pesticide.toFixed(2)} litres</p>
-        </motion.div>
+        {/* STATS GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <Stat icon={<Leaf />} label="Farm Size" value={`${size} acres`} />
+          <Stat icon={<Sprout />} label="Estimated Yield" value={`${estimatedYield.toFixed(2)} tons`} />
+          <Stat icon={<FlaskRound />} label="Fertilizer" value={`${fertilizer.toFixed(1)} kg`} />
+          <Stat icon={<Bug />} label="Pesticide" value={`${pesticide.toFixed(2)} litres`} />
+          <Stat icon={<AlertTriangle />} label="Post-Harvest Loss" value={`${spoilageLoss.toFixed(2)} tons`} />
+          <Stat icon={<Snowflake />} label="Cold Storage" value={`${coldStorage.toFixed(2)} tons`} />
+          <Stat icon={<Warehouse />} label="Warehouse Storage" value={`${warehouse.toFixed(2)} tons`} />
+          <Stat icon={<Truck />} label="Saved via Routing" value={`${savedRouting.toFixed(2)} tons`} />
+          <Stat icon={<PackageCheck />} label="Packhouse Benefit" value={`${packhouseSaved.toFixed(2)} tons saved`} />
+          <Stat icon={<Info />} label="Agri Infra Fund" value={agriInfraFundEligible ? "Eligible" : "Not Eligible"} />
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mb-12">
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-white rounded-2xl p-5 shadow-lg">
-          <AlertTriangle className="text-orange-500 mb-2" />
-          <p className="text-sm text-gray-500">Post-Harvest Loss</p>
-          <p className="text-xl font-bold">{spoilageLoss.toFixed(2)} tons</p>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-cyan-50 rounded-2xl p-5 shadow-lg">
-          <Snowflake className="text-cyan-600 mb-2" />
-          <p className="text-sm text-gray-500">Cold Storage Needed</p>
-          <p className="text-xl font-bold">{coldStorageQty.toFixed(2)} tons</p>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-gray-50 rounded-2xl p-5 shadow-lg">
-          <Warehouse className="text-gray-600 mb-2" />
-          <p className="text-sm text-gray-500">Warehouse Storage</p>
-          <p className="text-xl font-bold">{normalStorageQty.toFixed(2)} tons</p>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-indigo-50 rounded-2xl p-5 shadow-lg">
-          <Truck className="text-indigo-600 mb-2" />
-          <p className="text-sm text-gray-500">Saved via Route Optimization</p>
-          <p className="text-xl font-bold">
-            {savedProduceByRouting.toFixed(2)} tons
-          </p>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-emerald-50 rounded-2xl p-5 shadow-lg">
-          <PackageCheck className="text-emerald-600 mb-2" />
-          <p className="text-sm text-gray-500">Packhouse Benefit</p>
-          <p className="text-xl font-bold">
-            {packhouseRecommended
-              ? `${packhouseSavedProduce.toFixed(2)} tons saved`
-              : "Not Required"}
-          </p>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} className="bg-green-100 rounded-2xl p-5 shadow-lg">
-          <Info className="text-green-700 mb-2" />
-          <p className="text-sm text-gray-500">Agri Infra Fund</p>
-          <p className="text-xl font-bold">
-            {agriInfraFundEligible ? "Eligible" : "Not Eligible"}
-          </p>
-        </motion.div>
-      </div>
-    </div>
+    </>
   );
 }
 
-export default FarmDetail;
+function Stat({ icon, label, value }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="bg-white rounded-2xl p-5 shadow-lg text-center"
+    >
+      <div className="flex justify-center mb-2 text-green-600">
+        {icon}
+      </div>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-xl font-bold">{value}</p>
+    </motion.div>
+  );
+}
