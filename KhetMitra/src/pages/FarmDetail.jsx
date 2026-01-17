@@ -32,11 +32,18 @@ import {
 const NAVBAR_HEIGHT = 72; // 👈 IMPORTANT (match Navbar height)
 
 const cropConfig = {
-  wheat: { yield: 1.8, fertilizer: 60, pesticide: 0.35 },
-  rice: { yield: 2.2, fertilizer: 75, pesticide: 0.45 },
-  maize: { yield: 2.0, fertilizer: 65, pesticide: 0.4 },
-  sugarcane: { yield: 35, fertilizer: 180, pesticide: 0.6 },
-  cotton: { yield: 1.2, fertilizer: 50, pesticide: 0.3 },
+  wheat:     { yield: 1.8, fertilizer: 60,  pesticide: 0.35 },
+  rice:      { yield: 2.2, fertilizer: 75,  pesticide: 0.45 },
+  maize:     { yield: 2.0, fertilizer: 65,  pesticide: 0.40 },
+  barley:    { yield: 1.6, fertilizer: 55,  pesticide: 0.30 },
+  pulses:    { yield: 1.2, fertilizer: 40,  pesticide: 0.25 },
+  mustard:   { yield: 1.4, fertilizer: 50,  pesticide: 0.30 },
+  groundnut: { yield: 1.8, fertilizer: 70,  pesticide: 0.45 },
+  soybean:   { yield: 1.6, fertilizer: 65,  pesticide: 0.40 },
+  potato:    { yield: 9.0, fertilizer: 120, pesticide: 0.60 },
+  onion:     { yield: 7.5, fertilizer: 110, pesticide: 0.55 },
+  sugarcane: { yield: 35,  fertilizer: 180, pesticide: 0.60 },
+  cotton:    { yield: 1.2, fertilizer: 50,  pesticide: 0.30 },
 };
 
 export default function FarmDetail() {
