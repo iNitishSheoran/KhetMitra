@@ -21,8 +21,10 @@ import windSound from "../assets/wind.mp3";
 import satelliteImg from "../assets/satellite.png";
 
 // ✅ Gemini API Key (frontend visible, better use backend for security)
-const GEMINI_API_KEY = "AIzaSyAHdxiTov8uN55kFMcHt0I7ebaDhedJjT4";
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+const AI_API_URL = "https://khetmitra-be.onrender.com/ai/crop-recommend";
+// const AI_API_URL = "http://localhost:2713/ai/crop-recommend";
+
+
 
 export default function Diagnose() {
   const [sensorData, setSensorData] = useState({});
@@ -92,9 +94,11 @@ export default function Diagnose() {
       try {
         const res = await fetch(`${DEPLOYED_BE_URL}/sensor/latest/${DEVICE_ID}`);
         const data = await res.json();
+        console.log("🟢 Raw sensor API response:", data);
         if (!mounted) return;
 
-        const deviceDisconnected = !data?.success || data.disconnected;
+        // const deviceDisconnected = !data?.success || data.disconnected;
+        const deviceDisconnected = !data?.success || false; // ignore disconnect for testing
 
         if (!deviceDisconnected) {
           const newData = data.data;
@@ -115,9 +119,13 @@ export default function Diagnose() {
           // ✅ Gemini API call only once
           if (!recCalledRef.current) {
             const valid = newData.soilPH || newData.nitrogen || newData.phosphorus || newData.potassium;
+            console.log("🟢 AI call condition check:", { valid, newData });
             if (valid) {
               recCalledRef.current = true;
-              callGeminiForRecommendation(newData);
+              // callGeminiForRecommendation(newData);
+              // callOpenAIForRecommendation(newData);
+              callGroqForRecommendation(newData);
+
             }
           }
         } else {
@@ -144,44 +152,31 @@ export default function Diagnose() {
 
 
 
+
   // ✅ Gemini API call
-  const callGeminiForRecommendation = async (data) => {
-    setLoadingRec(true);
-    try {
-      const prompt = `You are an expert Indian crop advisor. Based on the soil and environment data below, recommend exactly 3 suitable crops (short names), each with 1 short farmer-friendly sentence (in Hinglish). Also add a 1-line quick tip (Hindi/Hinglish) about soil correction if needed.
-Data:
-- Soil pH: ${data.soilPH}
-- Nitrogen (N): ${data.nitrogen}
-- Phosphorus (P): ${data.phosphorus}
-- Potassium (K): ${data.potassium}
-- Soil Moisture: ${data.soilMoist}
-- Soil Temperature: ${data.soilTemp}
-- Rain: ${data.rain}
-- Pressure: ${data.pressure}
-- Altitude: ${data.altitude}
-- Light (LDR): ${data.ldr}
-- Wind (voltage/windSpeed): ${data.voltage}
+const callGroqForRecommendation = async (data) => {
+  setLoadingRec(true);
+  try {
+    const res = await fetch(AI_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-Keep the answer short, farmer-friendly, and in Hinglish.
-Format: list of 3 crops with emojis, then short reasons and one-line tip.`;
+    const json = await res.json();
+    console.log("🟢 Groq Response:", json);
 
-      const body = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-      const res = await fetch(GEMINI_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+    setRecommendation(
+      json?.text || "⚠️ Local Kisan Mitra se salah lo."
+    );
+  } catch (err) {
+    console.error("Groq fetch error:", err);
+    setRecommendation("⚠️ Local Kisan Mitra se salah lo.");
+  } finally {
+    setLoadingRec(false);
+  }
+};
 
-      const json = await res.json();
-      const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-      setRecommendation(text?.trim() || "⚠️ Local Kisan Mitra se salah lo.");
-    } catch (err) {
-      console.error("Gemini fetch error:", err);
-      setRecommendation("⚠️ Local Kisan Mitra se salah lo.");
-    } finally {
-      setLoadingRec(false);
-    }
-  };
 
   // ✅ UI
   const cropSensors = [
@@ -301,15 +296,15 @@ Format: list of 3 crops with emojis, then short reasons and one-line tip.`;
           {
             isFetchingData ? (
               <button
-                className="text-lg text-emerald-200 mt-2 border-2 border-green-600 p-3 "
+                className="text-lg font-medium text-[#0d1b1e] mt-2 border-2 border-green-600 p-3 w-60 rounded-md bg-gradient-to-r from-emerald-300 via-teal-300 to-sky-400 drop-shadow-lg"
                 onClick={handleStopData}
-              >Stop Fetching Data</button>
+              >डेटा बंद करें</button>
             ) : (
 
               <button
-                className="text-lg text-emerald-200 mt-2 border-2 border-green-600 p-3 "
+                className="text-lg font-medium text-[#0d1b1e] mt-2 border-2 border-green-600 p-3 w-60 rounded-md bg-gradient-to-r from-emerald-300 via-teal-300 to-sky-400 drop-shadow-lg"
                 onClick={handleFetchData}
-              >Fetch Data</button>
+              >डेटा देखें</button>
             )
           }
         </div>
